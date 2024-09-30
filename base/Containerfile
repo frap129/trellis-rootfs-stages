@@ -1,19 +1,20 @@
 FROM localhost/archlinux-ostree-builder AS builder
 
-# We need the ostree hook.
-RUN install -d /mnt/etc
-COPY mkinitcpio.conf /mnt/etc/
-
 # Install packages.
 RUN pacstrap -c -G -M /mnt \
 	base \
 	linux \
+	dracut \
 	intel-ucode \
 	amd-ucode \
 	efibootmgr \
 	grub \
 	ostree \
 	which
+
+# Setup dracut
+COPY rootfs/etc/dracut.conf.d/ostree.conf /mnt/etc/dracut.conf.d/
+COPY rootfs/etc/dracut.conf.d/module-setup.sh /mnt/etc/dracut.conf.d/
 
 # Build AUR packages: Install dependencies and create user.
 RUN pacman --noconfirm -Syu base-devel git sudo
@@ -50,3 +51,7 @@ RUN pacman-key --init
 RUN pacman-key --populate
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
+
+# Generate initramfs
+COPY scripts/dracut-setup.sh /
+RUN /dracut-setup.sh && ls /boot && rm /dracut-setup.sh
