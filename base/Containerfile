@@ -1,22 +1,13 @@
 FROM localhost/archlinux-ostree-builder AS builder
 
-# Install packages.
+# Bootstrap early reuired packages.
 RUN pacstrap -c -G -M /mnt \
 	base \
-	linux \
 	linux-firmware \
 	dracut \
 	intel-ucode \
 	amd-ucode \
-	efibootmgr \
-	grub \
-	ostree \
-	podman \
-	which \
-	less \
-	git \
-	vim \
-	iwd 
+	wget
 
 # Setup dracut
 COPY rootfs/etc/dracut.conf.d/ostree.conf /mnt/etc/dracut.conf.d/
@@ -40,6 +31,31 @@ RUN cp /home/builder/yay-bin/*.tar.zst /aur/
 FROM scratch
 COPY --from=builder /mnt /
 
+# Switch to CachyOS repos
+RUN echo 'Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch' > /etc/pacman.d/mirrorlist
+RUN pacman-key --init
+RUN pacman-key --populate
+RUN wget https://mirror.cachyos.org/cachyos-repo.tar.xz && \
+	tar xvf cachyos-repo.tar.xz && \
+	cd cachyos-repo && \
+	sed -i 's/pacman /pacman --noconfirm /g' cachyos-repo.sh && \
+	./cachyos-repo.sh && \
+	cd .. && \
+	rm -rf cachyos-repo cachyos-repo.tar.xz
+
+# Install packages
+RUN pacman --noconfirm -S \
+	linux-cachyos \
+	efibootmgr \
+	grub \
+	ostree \
+	podman \
+	iwd \
+	which \
+	less \
+	git \
+	vim
+
 # The rootfs can't be modified and systemd can't create them implicitly.
 # That's why we have to create them as part of the rootfs.
 RUN mkdir /efi
@@ -60,9 +76,6 @@ RUN systemctl enable iwd
 
 # Install built AUR packages.
 COPY --from=builder /aur /aur
-RUN echo 'Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-RUN pacman-key --init
-RUN pacman-key --populate
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
