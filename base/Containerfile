@@ -4,13 +4,19 @@ FROM localhost/archlinux-ostree-builder AS builder
 RUN pacstrap -c -G -M /mnt \
 	base \
 	linux \
+	linux-firmware \
 	dracut \
 	intel-ucode \
 	amd-ucode \
 	efibootmgr \
 	grub \
 	ostree \
-	which
+	podman \
+	which \
+	less \
+	git \
+	vim \
+	iwd 
 
 # Setup dracut
 COPY rootfs/etc/dracut.conf.d/ostree.conf /mnt/etc/dracut.conf.d/
