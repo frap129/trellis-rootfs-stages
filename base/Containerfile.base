@@ -2,7 +2,7 @@ FROM localhost/archlinux-ostree-builder AS builder
 
 # Bootstrap early reuired packages.
 RUN pacstrap -c -G -M /mnt \
-	base \
+base \
 	linux-firmware \
 	dracut \
 	intel-ucode \
@@ -28,7 +28,7 @@ RUN mkdir /aur
 RUN cp /home/builder/yay-bin/*.tar.zst /aur/
 
 # Turn the pacstrapped rootfs into a container image.
-FROM scratch
+FROM scratch as base
 COPY --from=builder /mnt /
 
 # Switch to CachyOS repos
@@ -48,13 +48,19 @@ RUN pacman --noconfirm -S \
 	linux-cachyos \
 	efibootmgr \
 	grub \
+	vim \
 	ostree \
 	podman \
-	iwd \
 	which \
 	less \
+	openssh \
 	git \
-	vim
+	doas
+
+# Install built AUR packages.
+COPY --from=builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
 
 # The rootfs can't be modified and systemd can't create them implicitly.
 # That's why we have to create them as part of the rootfs.
@@ -71,14 +77,3 @@ RUN systemctl enable systemd-networkd
 RUN systemctl enable systemd-resolved
 RUN systemctl disable systemd-networkd-wait-online
 
-# Wireless networking
-RUN systemctl enable iwd
-
-# Install built AUR packages.
-COPY --from=builder /aur /aur
-RUN pacman --noconfirm -U /aur/*
-RUN rm -r /aur
-
-# Generate initramfs
-COPY scripts/dracut-setup.sh /
-RUN /dracut-setup.sh && ls /boot && rm /dracut-setup.sh

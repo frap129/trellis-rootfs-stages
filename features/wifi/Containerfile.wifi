@@ -1,0 +1,10 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} as wifi
+
+RUN pacman --noconfirm -S \
+	iwd
+
+RUN systemctl enable iwd
+
+COPY rootfs/etc/iwd/main.conf /etc/iwd/main.conf
+

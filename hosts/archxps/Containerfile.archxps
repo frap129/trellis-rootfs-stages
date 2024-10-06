@@ -1,0 +1,19 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} as archxps
+
+# Install packages
+RUN pacman --noconfirm -S \
+	neovim \
+	zip \
+	unzip \
+	zsh \
+	yadm \
+	sway \
+	waybar \
+	wofi \
+	firefox \
+	alacritty \
+	greetd-tuigreet
+
+COPY --from=scripts aur-install.sh /
+RUN /aur-install.sh cozette-ttf && rm /aur-install.sh
