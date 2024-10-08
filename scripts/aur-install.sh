@@ -12,7 +12,8 @@ echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/build-temp
 mkdir /home/build && chown build:build -R /home/build
 
 # Install AUR packages
-su build -c "yay -S --noconfirm --cleanafter --removemake $@"
+packages="$@"
+su build -c "yay -S --noconfirm --cleanafter --removemake $packages"
 
 # Remove build user and package cache
 rm -drf /home/build /etc/sudoers.d/build-temp /tmp/*
