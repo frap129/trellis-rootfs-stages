@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS bluetooth
+
+RUN pacman --noconfirm -S \
+  blueman \
+  bluez-utils
+
+RUN systemctl enable bluetooth.service
+
+
+
