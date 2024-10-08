@@ -103,7 +103,6 @@ RUN /aur-install.sh \
 	btrfsmaintenance \
 	&& rm /aur-install.sh
 
-
 # The rootfs can't be modified and systemd can't create them implicitly.
 # That's why we have to create them as part of the rootfs.
 RUN mkdir /efi
@@ -116,7 +115,11 @@ RUN locale-gen
 # Enable NTPSec
 RUN systemctl enable ntpd
 RUN rm /etc/ntp.d/use-pool
-COPY rootfs/etc/ntp.d/use-pool /etc/ntp.d/use-pool
+COPY rootfs/etc/ntp.d/use-pool /etc/ntp.d/
+
+# System tuning
+COPY rootfs/etc/sysctl.d/* /etc/sysctl.d/
+RUN systemctl enable bpftune
 
 # Enable networking
 RUN systemctl enable systemd-networkd
