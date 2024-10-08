@@ -43,34 +43,80 @@ RUN wget https://mirror.cachyos.org/cachyos-repo.tar.xz && \
 	cd .. && \
 	rm -rf cachyos-repo cachyos-repo.tar.xz
 
-# Install packages
-RUN pacman --noconfirm -S \
-	linux-cachyos \
-	efibootmgr \
-	grub \
-	vim \
-	ostree \
-	podman \
-	which \
-	less \
-	openssh \
-	git \
-	doas
-
 # Install built AUR packages.
 COPY --from=builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
+# Install packages
+RUN pacman --noconfirm -S \
+	linux-cachyos \
+	efibootmgr \
+	grub \
+	ostree \
+	podman \
+	which \
+	less \
+	openssh \
+	lsof \
+	pigz \
+	b3sum \
+	dust \
+	eza \
+	bat \
+	git-delta \
+	tealdeer \
+	thefuck \
+	zoxide \
+	rust \
+	sshfs \
+	systemd-resolvconf \
+	zram-generator \
+	zsh \
+	ripgrep \
+	python-pipx \
+	logrotate \
+	man-db \
+	man-pages \
+	neovim \
+	nss-mdns \
+	opendoas \
+	bash-completion \
+	bridge-utils \
+	btop \
+	btrfs-progs \
+	clamav \
+	distrobox \
+	dnsmasq \
+	exfatprogs \
+	fzf \
+	git-lfs \
+	hunspell-en_us \
+	zip \
+	unzip \
+	bpftune-git \
+	libfido2
+
+COPY --from=scripts aur-install.sh /
+RUN /aur-install.sh \
+	ntpsec \
+	btrfsmaintenance \
+	&& rm /aur-install.sh
+
+
 # The rootfs can't be modified and systemd can't create them implicitly.
 # That's why we have to create them as part of the rootfs.
 RUN mkdir /efi
 
-# Normal post installation steps.
+# Set locale
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 RUN sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
-RUN systemctl enable systemd-timesyncd.service
+
+# Enable NTPSec
+RUN systemctl enable ntpd
+RUN rm /etc/ntp.d/use-pool
+COPY rootfs/etc/ntp.d/use-pool /etc/ntp.d/use-pool
 
 # Enable networking
 RUN systemctl enable systemd-networkd
