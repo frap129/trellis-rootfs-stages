@@ -1,0 +1,24 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS cli
+
+# Install Arch packages
+RUN pacman --noconfirm -S \
+  clamav
+
+COPY --from=scripts aur-install.sh /
+RUN /aur-install.sh \
+	python-fangfrisch \
+	&& rm /aur-install.sh
+
+USER clamav
+RUN /usr/bin/fangfrisch --conf /etc/fangfrisch/fangfrisch.conf initdb
+USER root
+RUN systemctl enable clamav-freshclam-once
+RUN systemctl enable fangfrisch
+RUN systemctl enable clamav-daemon
+
+FROM cli AS gui
+
+# Install Arch packages
+RUN pacman --noconfirm -S \
+  clamtk
