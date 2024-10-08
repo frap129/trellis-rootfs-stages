@@ -1,0 +1,7 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS local-pkgs
+
+# Install local packages
+COPY pkgs /pkgs
+RUN pacman --noconfirm -U /pkgs/*
+RUN rm -r /pkgs
