@@ -113,6 +113,7 @@ RUN sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
 
 # Enable NTPSec
+RUN systemctl disable systemd-timesyncd
 RUN systemctl enable ntpd
 RUN rm /etc/ntp.d/use-pool
 COPY rootfs/etc/ntp.d/use-pool /etc/ntp.d/
