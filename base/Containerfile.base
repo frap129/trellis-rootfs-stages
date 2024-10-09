@@ -85,9 +85,7 @@ RUN pacman --noconfirm -S \
 	bridge-utils \
 	btop \
 	btrfs-progs \
-	clamav \
 	distrobox \
-	dnsmasq \
 	exfatprogs \
 	fzf \
 	git-lfs \
