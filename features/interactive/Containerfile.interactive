@@ -1,0 +1,20 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS interactive
+
+# Install Arch packages
+RUN pacman --noconfirm -S \
+  ananicy-cpp \
+  cachyos-ananicy-rules \
+  plymouth
+
+# Install AUR packages
+COPY --from=scripts aur-install.sh /
+RUN /aur-install.sh \
+	plymouth-theme-bgrt-better-luks
+RUN rm /aur-install.sh
+
+RUN systemctl enable ananicy-cpp
+
+RUN rm /etc/plymouth/plymouthd.conf
+COPY rootfs/etc/plymouth/plymouthd.conf /etc/plymouth
+
