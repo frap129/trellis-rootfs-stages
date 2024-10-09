@@ -27,7 +27,7 @@ USER root
 RUN mkdir /aur
 RUN cp /home/builder/yay-bin/*.tar.zst /aur/
 
-# Turn the pacstrapped rootfs into a container image.
+#Turn the pacstrapped rootfs into a container image.
 FROM scratch as base
 COPY --from=builder /mnt /
 
@@ -60,16 +60,7 @@ RUN pacman --noconfirm -S \
 	openssh \
 	lsof \
 	pigz \
-	b3sum \
-	dust \
-	eza \
-	bat \
-	git-delta \
-	tealdeer \
-	thefuck \
-	zoxide \
 	rust \
-	sshfs \
 	systemd-resolvconf \
 	zram-generator \
 	zsh \
@@ -79,21 +70,15 @@ RUN pacman --noconfirm -S \
 	man-db \
 	man-pages \
 	neovim \
-	nss-mdns \
 	opendoas \
 	bash-completion \
-	bridge-utils \
-	btop \
 	btrfs-progs \
 	distrobox \
 	exfatprogs \
-	fzf \
-	git-lfs \
 	hunspell-en_us \
 	zip \
 	unzip \
-	bpftune-git \
-	libfido2
+	bpftune-git
 
 COPY --from=scripts aur-install.sh /
 RUN /aur-install.sh \

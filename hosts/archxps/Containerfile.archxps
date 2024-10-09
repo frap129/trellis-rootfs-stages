@@ -1,19 +1,45 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
-FROM ${BASE_IMAGE} as archxps
+FROM localhost/archlinux-ostree-builder AS builder
+RUN pacman --noconfirm -Syu base-devel git sudo opendoas
+RUN useradd -m builder
 
-# Install packages
+# Build AUR packages: Build
+USER builder
+RUN git clone https://aur.archlinux.org/fudo-git.git /home/builder/fudo-git
+RUN cd /home/builder/fudo-git && makepkg -s --noconfirm
+USER root
+
+# Build AUR packages: Copy packages to a common place.
+RUN mkdir /aur
+RUN cp /home/builder/fudo-git/*.tar.zst /aur/
+
+FROM ${BASE_IMAGE} AS archxps
+
+# Install Arch packages
 RUN pacman --noconfirm -S \
-	neovim \
-	zip \
-	unzip \
-	zsh \
-	yadm \
-	sway \
-	waybar \
-	wofi \
-	firefox \
-	alacritty \
-	greetd-tuigreet
+	b3sum \
+	dust \
+	eza \
+	bat \
+	git-delta \
+	tealdeer \
+	thefuck \
+	zoxide \
+	fzf \
+	git-lfs \
+	sshfs \
+	btop \
+	yadm
 
+# Install AUR packages
 COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh cozette-ttf && rm /aur-install.sh
+RUN /aur-install.sh \
+	cozette-ttf \
+	python-pywal16 \
+	python-pywalfox
+RUN rm /aur-install.sh
+
+# Install built AUR packages.
+COPY --from=builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
