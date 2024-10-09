@@ -122,7 +122,7 @@ RUN systemctl enable systemd-resolved
 RUN systemctl disable systemd-networkd-wait-online
 
 # System tuning
-COPY rootfs/etc/sysctl.d/* /etc/sysctl.d/
+COPY rootfs/usr/lib/sysctl.d/* /usr/lib/sysctl.d/
 RUN systemctl enable bpftune
 
 # Setup zram
