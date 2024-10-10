@@ -1,5 +1,5 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
-FROM ${BASE_IMAGE} as wifi
+FROM ${BASE_IMAGE} AS wifi
 
 RUN pacman --noconfirm -S \
 	iwd

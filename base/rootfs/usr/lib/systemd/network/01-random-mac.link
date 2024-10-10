@@ -1,0 +1,5 @@
+[Match]
+PermanentMACAddress=original MAC
+
+[Link]
+MACAddressPolicy=random

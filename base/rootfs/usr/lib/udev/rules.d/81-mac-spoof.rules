@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="net", ATTR{address}=="original MAC", RUN+="/usr/bin/ip link set dev $name address spoofed MAC"
