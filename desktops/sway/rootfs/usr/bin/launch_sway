@@ -27,5 +27,5 @@ if [[ -z "$XDG_RUNTIME_DIR" ]]; then
     doas mkdir -p $XDG_RUNTIME_DIR
 fi;
 
-sway
+sway --unsupported-gpu
 
