@@ -1,0 +1,60 @@
+# Common Mesa packages
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS mesa
+RUN pacman -S --noconfirm \
+  mesa \
+  lib32-mesa \
+  mesa-vdpau \
+  lib32-mesa-vdpau
+
+# Intel GPU Drivers
+FROM mesa AS intel
+RUN pacman -S --noconfirm \
+  libva-intel-driver \
+  lib32-libva-intel-driver \
+  vulkan-intel \
+  lib32-vulkan-intel \
+  intel-media-driver \
+  intel-compute-runtime \
+  intel-oneapi-compiler-shared-runtime
+
+# AMD GPU Drivers
+FROM mesa AS amd
+RUN pacman -S --noconfirm \
+  vulkan-radeon \
+  lib32-vulkan-radeon \
+  libva-mesa-driver \
+  lib32-libva-mesa-driver \
+  xf86-video-amdgpu 
+
+# Nvidia Drivers w/ Open Kernel Module
+FROM ${BASE_IMAGE} AS nvidia-open
+COPY scripts/nvidia-kernel-mod-select.sh /
+RUN pacman -S --noconfirm \
+  nvidia-utils \
+  egl-wayland \
+  nvidia-settings \
+  opencl-nvidia \
+  lib32-opencl-nvidia \
+  lib32-nvidia-utils \
+  libva-nvidia-driver \
+  vulkan-icd-loader \
+  lib32-vulkan-icd-loader \
+  $(/nvidia-kernel-mod-select.sh)
+RUN rm /nvidia-kernel-mod-select.sh
+RUN echo "export LIBVA_DRIVER_NAME=nvidia" > /etc/profile.d/nvidia-vaapi.sh
+
+# Nvidia Drivers w/ Open Kernel Module + PRIME
+FROM nvidia-open AS nvidia-open-prime
+RUN pacman -S --noconfirm \
+  nvidia-prime \
+  switcheroo-control
+RUN systemctl enable switcheroo-control
+RUN rm /etc/profile.d/nvidia-vaapi.sh
+
+# General Mesa OpenCL support
+FROM ${BASE_IMAGE} AS mesa-opencl
+RUN pacman -S --noconfirm \
+  opencl-rusticl-mesa \
+  lib32-opencl-rusticl-mesa
+
