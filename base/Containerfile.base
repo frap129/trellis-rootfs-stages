@@ -1,8 +1,9 @@
-FROM localhost/archlinux-ostree-builder AS builder
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM localhost/archlinux-ostree-builder AS rootfs-builder
 
 # Bootstrap early reuired packages.
 RUN pacstrap -c -G -M /mnt \
-base \
+	base \
 	linux-firmware \
 	dracut \
 	intel-ucode \
@@ -10,8 +11,14 @@ base \
 	wget
 
 # Setup dracut
-COPY rootfs/etc/dracut.conf.d/ostree.conf /mnt/etc/dracut.conf.d/
-COPY rootfs/etc/dracut.conf.d/module-setup.sh /mnt/etc/dracut.conf.d/
+COPY rootfs-common/etc/dracut.conf.d/ostree.conf /mnt/etc/dracut.conf.d/
+COPY rootfs-common/etc/dracut.conf.d/module-setup.sh /mnt/etc/dracut.conf.d/
+
+# Add repo mirrors
+RUN echo 'Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch' > /mnt/etc/pacman.d/mirrorlist
+RUN curl https://raw.githubusercontent.com/CachyOS/CachyOS-PKGBUILDS/master/cachyos-mirrorlist/cachyos-mirrorlist -o /mnt/etc/pacman.d/cachyos-mirrorlist
+
+FROM localhost/archlinux-ostree-builder AS pkg-builder
 
 # Build AUR packages: Install dependencies and create user.
 RUN pacman --noconfirm -Syu base-devel git sudo
@@ -27,24 +34,39 @@ USER root
 RUN mkdir /aur
 RUN cp /home/builder/yay-bin/*.tar.zst /aur/
 
-#Turn the pacstrapped rootfs into a container image.
-FROM scratch as base
-COPY --from=builder /mnt /
+# Turn the pacstrapped rootfs into a container image.
+FROM scratch AS base
+COPY --from=rootfs-builder /mnt /
 
 # Switch to CachyOS repos
-RUN echo 'Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch' > /etc/pacman.d/mirrorlist
-RUN pacman-key --init
-RUN pacman-key --populate
-RUN wget https://mirror.cachyos.org/cachyos-repo.tar.xz && \
-	tar xvf cachyos-repo.tar.xz && \
-	cd cachyos-repo && \
-	sed -i 's/pacman /pacman --noconfirm /g' cachyos-repo.sh && \
-	./cachyos-repo.sh && \
-	cd .. && \
-	rm -rf cachyos-repo cachyos-repo.tar.xz
+COPY rootfs-base/etc/pacman.conf /etc/pacman.conf
+RUN  pacman-key --init && \
+	pacman-key --populate && \
+	pacman-key --recv-keys F3B607488DB35A47 --keyserver keyserver.ubuntu.com && \
+	pacman-key --lsign-key F3B607488DB35A47 && \
+	pacman -Sy --noconfirm cachyos-keyring cachyos-mirrorlist &&\
+	mv /etc/pacman.d/cachyos-mirrorlist.pacnew /etc/pacman.d/cachyos-mirrorlist && \
+	pacman -Syu --noconfirm
+
+FROM base AS v3
+
+# Add CachyOS v3 Repos
+RUN pacman -S --noconfirm cachyos-v3-mirrorlist
+COPY rootfs-v3/etc/pacman.conf /etc/pacman.conf
+RUN pacman -Syu --noconfirm
+
+FROM base AS v4
+
+# Add CachyOS v4 Repos
+RUN pacman -S --noconfirm cachyos-v4-mirrorlist
+COPY rootfs-v4/etc/pacman.conf /etc/pacman.conf
+RUN pacman -Syu --noconfirm
+
+# Common setup
+FROM ${BASE_IMAGE} AS common
 
 # Install built AUR packages.
-COPY --from=builder /aur /aur
+COPY --from=pkg-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
@@ -99,23 +121,23 @@ RUN locale-gen
 RUN systemctl disable systemd-timesyncd
 RUN systemctl enable ntpd
 RUN rm /etc/ntp.d/use-pool
-COPY rootfs/etc/ntp.d/use-pool /etc/ntp.d/
+COPY rootfs-common/etc/ntp.d/use-pool /etc/ntp.d/
 
 # Configure networking
 RUN systemctl enable systemd-networkd
 RUN systemctl enable systemd-resolved
 RUN systemctl disable systemd-networkd-wait-online
-COPY rootfs/usr/lib/udev/rules.d/* /usr/lib/udev/rules.d/
-COPY rootfs/usr/lib/systemd/network/* /usr/lib/systemd/network/
+COPY rootfs-common/usr/lib/udev/rules.d/* /usr/lib/udev/rules.d/
+COPY rootfs-common/usr/lib/systemd/network/* /usr/lib/systemd/network/
 
 # System tuning
-COPY rootfs/usr/lib/sysctl.d/* /usr/lib/sysctl.d/
+COPY rootfs-common/usr/lib/sysctl.d/* /usr/lib/sysctl.d/
 RUN systemctl enable bpftune
 
 # Setup zram
-COPY rootfs/usr/lib/systemd/zram-generator.conf /usr/lib/systemd/
+COPY rootfs-common/usr/lib/systemd/zram-generator.conf /usr/lib/systemd/
 RUN systemctl enable systemd-zram-setup@zram0
 
 # Add some shell aliases
-COPY rootfs/etc/profile.d/* /etc/profile.d/
+COPY rootfs-common/etc/profile.d/* /etc/profile.d/
 
