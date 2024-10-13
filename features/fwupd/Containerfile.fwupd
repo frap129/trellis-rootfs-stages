@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS fwupd
+
+# Install Arch packages
+RUN pacman --noconfirm -S \
+  fwupd \
+  udisks2
+
+# Enable usdisk2
+RUN systemctl enable udisks2
+
