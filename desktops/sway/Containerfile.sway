@@ -15,6 +15,7 @@ RUN pacman --noconfirm -S \
 	alacritty \
 	hyprlock \
 	hypridle \
+	ttf-firacode-nerd \
 	greetd-tuigreet
 
 # Install AUR packages
