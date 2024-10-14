@@ -123,12 +123,8 @@ RUN systemctl enable ntpd
 RUN rm /etc/ntp.d/use-pool
 COPY rootfs-common/etc/ntp.d/use-pool /etc/ntp.d/
 
-# Configure networking
-RUN systemctl enable systemd-networkd
+# Configure DNS resolution
 RUN systemctl enable systemd-resolved
-RUN systemctl disable systemd-networkd-wait-online
-COPY rootfs-common/usr/lib/udev/rules.d/* /usr/lib/udev/rules.d/
-COPY rootfs-common/usr/lib/systemd/network/* /usr/lib/systemd/network/
 
 # System tuning
 COPY rootfs-common/usr/lib/sysctl.d/* /usr/lib/sysctl.d/

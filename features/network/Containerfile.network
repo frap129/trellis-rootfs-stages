@@ -1,0 +1,45 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS networkd
+
+RUN systemctl enable systemd-networkd
+COPY rootfs-networkd/usr/lib/udev/rules.d/* /usr/lib/udev/rules.d/
+COPY rootfs-networkd/usr/lib/systemd/network/* /usr/lib/systemd/network/
+
+FROM ${BASE_IMAGE} AS iwd
+
+RUN pacman --noconfirm -S iwd
+
+FROM iwd AS iwd-standalone
+
+COPY rootfs-iwd/etc/iwd/main.conf /etc/iwd/main.conf
+RUN systemctl enable iwd
+
+FROM ${BASE_IMAGE} AS connman
+
+RUN pacman --noconfirm -S connman
+RUN systemctl disable systemd-resolved
+RUN systemctl enable connman
+# TODO: MAC Address spoofing
+
+FROM connman AS connman-gui
+
+COPY --from=scripts aur-install.sh /
+RUN /aur-install.sh \
+	cmst \
+	&& rm /aur-install.sh
+
+FROM iwd AS nm-iwd
+
+COPY --from=scripts aur-install.sh /
+RUN /aur-install.sh \
+	networkmanager-iwd \
+	&& rm /aur-install.sh
+RUN systemctl enable NetworkManager
+# TODO: MAC Address spoofing
+
+FROM nm-iwd AS nm-iwd-gui
+
+RUN pacman --noconfirm -S \
+	nm-connection-editor \
+	network-manager-applet
+
