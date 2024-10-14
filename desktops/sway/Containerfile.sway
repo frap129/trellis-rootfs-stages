@@ -1,4 +1,12 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
+
+# Build AUR packages
+FROM localhost/archlinux-ostree-builder AS pkg-builder
+RUN build-aur \
+	swayosd-git \
+	sworkstyle \
+	grimshot
+
 FROM ${BASE_IMAGE} AS sway
 
 # Install Arch packages
@@ -18,13 +26,10 @@ RUN pacman --noconfirm -S \
 	ttf-firacode-nerd \
 	greetd-tuigreet
 
-# Install AUR packages
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
-	swayosd-git \
-	sworkstyle \
-	grimshot
-RUN rm /aur-install.sh
+# Install built AUR packages.
+COPY --from=pkg-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
 
 RUN systemctl enable greetd
 COPY rootfs/usr/bin/launch_sway /usr/bin

@@ -1,4 +1,10 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
+
+# Build AUR packages
+FROM localhost/archlinux-ostree-builder AS pkg-builder
+RUN build-aur \
+	plymouth-theme-bgrt-better-luks
+
 FROM ${BASE_IMAGE} AS interactive
 
 # Install Arch packages
@@ -7,11 +13,10 @@ RUN pacman --noconfirm -S \
   cachyos-ananicy-rules \
   plymouth
 
-# Install AUR packages
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
-	plymouth-theme-bgrt-better-luks
-RUN rm /aur-install.sh
+# Install built AUR packages.
+COPY --from=pkg-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
 
 RUN systemctl enable ananicy-cpp
 

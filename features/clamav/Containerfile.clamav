@@ -1,14 +1,20 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
+
+# Build AUR packages
+FROM localhost/archlinux-ostree-builder AS pkg-builder
+RUN build-aur \
+	python-fangfrisch
+
 FROM ${BASE_IMAGE} AS cli
 
 # Install Arch packages
 RUN pacman --noconfirm -S \
   clamav
 
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
-	python-fangfrisch \
-	&& rm /aur-install.sh
+# Install built AUR packages.
+COPY --from=pkg-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
 
 USER clamav
 RUN /usr/bin/fangfrisch --conf /etc/fangfrisch/fangfrisch.conf initdb

@@ -1,20 +1,16 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 FROM ${BASE_IMAGE} AS mobile
 
-# Install AUR packages
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
+# Install tuned
+RUN pacman -S --noconfirm \
 	tuned \
 	tuned-ppd
-RUN rm /aur-install.sh
 
 # Enable tuned
 RUN systemctl enable tuned
 RUN systemctl enable tuned-ppd
 
-FROM localhost/archlinux-ostree-builder AS builder
-RUN pacman --noconfirm -Syu base-devel git sudo clang
-RUN useradd -m builder
+FROM localhost/archlinux-ostree-builder AS nicepowerd-builder
 
 # Build AUR packages: Build
 USER builder
@@ -23,14 +19,13 @@ RUN cd /home/builder/nicepowerd/pkg && makepkg -s --noconfirm
 USER root
 
 # Build AUR packages: Copy packages to a common place.
-RUN mkdir /aur
 RUN cp /home/builder/nicepowerd/pkg/*.tar.zst /aur/
 
 # Variant with nicepowerd for alt desktops
 FROM mobile as mobile-alt
 
 # Install built AUR packages.
-COPY --from=builder /aur /aur
+COPY --from=nicepowerd-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 

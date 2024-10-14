@@ -21,19 +21,32 @@ RUN systemctl disable systemd-resolved
 RUN systemctl enable connman
 # TODO: MAC Address spoofing
 
+# Build cmst
+FROM localhost/archlinux-ostree-builder AS cmst-builder
+RUN build-aur \
+	cmst
+
 FROM connman AS connman-gui
 
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
-	cmst \
-	&& rm /aur-install.sh
+# Install cmst
+COPY --from=cmst-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+# Build networkmanager-iwd
+FROM localhost/archlinux-ostree-builder AS nm-iwd-builder
+RUN build-aur \
+	networkmanager-iwd
+RUN cp /home/builder/aur/networkmanager-iwd/libnm-iwd*.tar.zst /aur/
 
 FROM iwd AS nm-iwd
 
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
-	networkmanager-iwd \
-	&& rm /aur-install.sh
+# Install networkmanager-iwd
+COPY --from=nm-iwd-builder /aur /aur
+RUN pacman --noconfirm -U /aur/libnm-iwd*
+RUN pacman --noconfirm -U /aur/networkmanager-iwd*
+RUN rm -r /aur
+
 RUN systemctl enable NetworkManager
 # TODO: MAC Address spoofing
 
