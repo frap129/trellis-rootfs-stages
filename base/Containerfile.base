@@ -119,6 +119,10 @@ RUN systemctl enable bpftune
 COPY rootfs-common/usr/lib/systemd/zram-generator.conf /usr/lib/systemd/
 RUN systemctl enable systemd-zram-setup@zram0
 
+# Disable coredumps
+COPY rootfs-common/usr/lib/systemd/system.conf.d /usr/lib/systemd/
+COPY rootfs-common/usr/lib/systemd/user.conf.d /usr/lib/systemd/
+
 # Add some shell aliases
 COPY rootfs-common/etc/profile.d/* /etc/profile.d/
 
