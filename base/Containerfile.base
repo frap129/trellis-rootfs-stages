@@ -109,6 +109,7 @@ RUN rm /etc/ntp.d/use-pool
 COPY rootfs-common/etc/ntp.d/use-pool /etc/ntp.d/
 
 # Configure DNS resolution
+COPY rootfs-common/usr/lib/systemd/resolved.conf.d /usr/lib/systemd/
 RUN systemctl enable systemd-resolved
 
 # System tuning
