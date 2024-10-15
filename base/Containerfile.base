@@ -78,7 +78,6 @@ RUN pacman --noconfirm -S \
 	man-db \
 	man-pages \
 	neovim \
-	opendoas \
 	bash-completion \
 	btrfs-progs \
 	distrobox \
