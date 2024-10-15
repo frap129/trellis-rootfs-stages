@@ -21,7 +21,6 @@ RUN curl https://raw.githubusercontent.com/CachyOS/CachyOS-PKGBUILDS/master/cach
 FROM localhost/archlinux-ostree-builder AS pkg-builder
 RUN build-aur \
 	yay-bin \
-  ntpsec \
 	btrfsmaintenance
 
 # Turn the pacstrapped rootfs into a container image.
@@ -68,6 +67,7 @@ RUN pacman --noconfirm -S \
 	openssh \
 	lsof \
 	pigz \
+	chrony \
 	rust \
 	systemd-resolvconf \
 	zram-generator \
@@ -102,11 +102,10 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 RUN sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
 
-# Enable NTPSec
+# Setup chrony
 RUN systemctl disable systemd-timesyncd
-RUN systemctl enable ntpd
-RUN rm /etc/ntp.d/use-pool
-COPY rootfs-common/etc/ntp.d/use-pool /etc/ntp.d/
+RUN systemctl enable chronyd
+COPY rootfs-common/etc/chrony.conf /etc/
 
 # Configure DNS resolution
 COPY rootfs-common/usr/lib/systemd/resolved.conf.d /usr/lib/systemd/
