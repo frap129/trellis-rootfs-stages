@@ -36,7 +36,8 @@ RUN  pacman-key --init && \
 	pacman-key --lsign-key F3B607488DB35A47 && \
 	pacman -Syy --noconfirm cachyos-keyring cachyos-mirrorlist &&\
 	mv /etc/pacman.d/cachyos-mirrorlist.pacnew /etc/pacman.d/cachyos-mirrorlist && \
-	pacman -Syu --noconfirm
+	pacman -Syu --noconfirm && \
+	rm /etc/pacman.conf.pacnew
 
 FROM base AS v3
 
