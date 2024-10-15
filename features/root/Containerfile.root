@@ -1,0 +1,35 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS sudo
+
+RUN pacman --noconfirm -S \
+  sudo
+
+RUN echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/wheel && \
+  echo "Defaults    timestamp_timeout = 1" > /etc/sudoers.d/timeout && \
+  chown -c root:root /etc/sudoers.d/* && \
+  chmod -c 0440 /etc/sudoers.d/*
+
+
+FROM ${BASE_IMAGE} AS doas
+
+RUN pacman --noconfirm -S \
+  opendoas
+
+RUN echo "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin} :wheel" > /etc/doas.conf && \
+  chown -c root:root /etc/doas.conf && \
+  chmod -c 0400 /etc/doas.conf
+
+
+FROM localhost/archlinux-ostree-builder AS fudo-builder
+RUN build-aur \
+	fudo-git
+
+FROM doas AS doas-compat
+
+# Install fudo
+COPY --from=fudo-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+# Silence fudo translations
+RUN echo "export FUDO_HIDE=1" > /etc/profile.d/fudo.sh
