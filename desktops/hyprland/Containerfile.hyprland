@@ -1,0 +1,57 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+
+# Build AUR packages
+FROM localhost/archlinux-ostree-builder AS hyprutils-builder
+RUN build-aur	hyprutils-git
+
+FROM localhost/archlinux-ostree-builder AS pkg-builder
+# Install hyprutils-git first.
+COPY --from=hyprutils-builder /aur /aur2
+RUN pacman --noconfirm -U /aur2/*
+RUN rm -r /aur2
+
+RUN build-aur \
+	swayosd-git \
+	hyprland-autoname-workspaces-git \
+	hyprpolkitagent-git \
+	grimshot
+
+FROM ${BASE_IMAGE} AS hyprland
+# Install hyprutils-git first.
+COPY --from=hyprutils-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+# Install Arch packages
+RUN pacman --noconfirm -S \
+	hyprland \
+	hyprpaper \
+	hypridle \
+	hyprlock \
+	hyprcursor \
+	hyprpicker \
+	wlsunset \
+	waybar \
+	wofi \
+	swaync \
+	clipman \
+	wdisplays \
+	alacritty \
+	ttf-firacode-nerd \
+	cosmic-files \
+	cosmic-store \
+	cosmic-settings \
+	cosmic-screenshot \
+	xdg-desktop-portal-hyprland \
+	xdg-desktop-portal-gtk \
+	xorg-xwayland \
+	greetd-tuigreet
+
+# Install built AUR packages.
+COPY --from=pkg-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+RUN systemctl enable greetd
+COPY rootfs/usr/bin/launch_hyprland /usr/bin
+COPY rootfs/etc/greetd/config.toml /etc/greetd
