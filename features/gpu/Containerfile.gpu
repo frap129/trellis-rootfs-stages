@@ -27,9 +27,16 @@ RUN pacman -S --noconfirm \
   lib32-libva-mesa-driver \
   xf86-video-amdgpu 
 
-# Nvidia Drivers w/ Open Kernel Module
-FROM ${BASE_IMAGE} AS nvidia-open
+# General Mesa OpenCL support
+FROM ${BASE_IMAGE} AS mesa-opencl
+RUN pacman -S --noconfirm \
+  opencl-rusticl-mesa \
+  lib32-opencl-rusticl-mesa
+
+# Userspace Nvidia GPU Drivers
+FROM ${BASE_IMAGE} AS nvidia-base
 COPY scripts/nvidia-kernel-mod-select.sh /
+RUN echo "export LIBVA_DRIVER_NAME=nvidia" > /etc/profile.d/nvidia-vaapi.sh
 RUN pacman -S --noconfirm \
   nvidia-utils \
   egl-wayland \
@@ -39,22 +46,33 @@ RUN pacman -S --noconfirm \
   lib32-nvidia-utils \
   libva-nvidia-driver \
   vulkan-icd-loader \
-  lib32-vulkan-icd-loader \
-  $(/nvidia-kernel-mod-select.sh)
-RUN rm /nvidia-kernel-mod-select.sh
-RUN echo "export LIBVA_DRIVER_NAME=nvidia" > /etc/profile.d/nvidia-vaapi.sh
+  lib32-vulkan-icd-loader
 
-# Nvidia Drivers w/ Open Kernel Module + PRIME
-FROM nvidia-open AS nvidia-open-prime
+# Userspace Nvidia GPU Drivers + PRIME
+FROM nvidia-base AS nvidia-base-prime
 RUN pacman -S --noconfirm \
   nvidia-prime \
   switcheroo-control
 RUN systemctl enable switcheroo-control
 RUN rm /etc/profile.d/nvidia-vaapi.sh
 
-# General Mesa OpenCL support
-FROM ${BASE_IMAGE} AS mesa-opencl
-RUN pacman -S --noconfirm \
-  opencl-rusticl-mesa \
-  lib32-opencl-rusticl-mesa
+# Nvidia Drivers w/ Proprietary Kernel Module
+FROM nvidia-base AS nvidia
+RUN pacman -S --noconfirm $(/nvidia-kernel-mod-select.sh)
+RUN rm /nvidia-kernel-mod-select.sh
+
+# Nvidia Drivers w/ Proprietary Kernel Module + PRIME
+FROM nvidia-base-prime AS nvidia-prime
+RUN pacman -S --noconfirm $(/nvidia-kernel-mod-select.sh)
+RUN rm /nvidia-kernel-mod-select.sh
+
+# Nvidia Drivers w/ Open Kernel Module
+FROM nvidia-base AS nvidia-open
+RUN pacman -S --noconfirm $(/nvidia-kernel-mod-select.sh -open)
+RUN rm /nvidia-kernel-mod-select.sh
+
+# Nvidia Drivers w/ Open Kernel Module + PRIME
+FROM nvidia-base-prime AS nvidia-open-prime
+RUN pacman -S --noconfirm $(/nvidia-kernel-mod-select.sh -open)
+RUN rm /nvidia-kernel-mod-select.sh
 

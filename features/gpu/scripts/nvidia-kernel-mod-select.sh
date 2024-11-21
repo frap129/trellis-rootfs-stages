@@ -17,19 +17,25 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+if [[ "$1" == "-open" ]]; then
+    variant="-open"
+else
+    variant=""
+fi
+
 kernels="$(pacman -Qqs "^linux-cachyos")"
 packages=""
 
 for kernel in $kernels; do
     case "$kernel" in
-        *-nvidia-open) modules+=" ${kernel}";;
+        *-nvidia${variant}) modules+=" ${kernel}";;
         *-headers|*-zfs|*-nvidia|*-dbg);;
-        *) packages+=" ${kernel}-nvidia-open";;
+        *) packages+=" ${kernel}-nvidia${variant}";;
     esac
 done
 
 # Fallback if there are no kernels with pre-built modules
-[ -z "$packages" ] && packages="nvidia-open-dkms"
+[ -z "$packages" ] && packages="nvidia${variant}-dkms"
 
 echo "$packages"
 
