@@ -23,6 +23,7 @@ for pkg in "$@"; do
             echo "$filename already built"
         else
             need_build=true
+            rm *.pkg.tar.zst
             break
         fi
     done
