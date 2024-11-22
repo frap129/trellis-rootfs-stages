@@ -1,17 +1,12 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
-FROM localhost/archlinux-ostree-builder AS builder
-RUN pacman --noconfirm -Syu base-devel git sudo opendoas
-RUN useradd -m builder
 
-# Build AUR packages: Build
-USER builder
-RUN git clone https://aur.archlinux.org/fudo-git.git /home/builder/fudo-git
-RUN cd /home/builder/fudo-git && makepkg -s --noconfirm
-USER root
-
-# Build AUR packages: Copy packages to a common place.
-RUN mkdir /aur
-RUN cp /home/builder/fudo-git/*.tar.zst /aur/
+# Build AUR packages
+FROM localhost/archlinux-ostree-builder AS pkg-builder
+RUN build-aur \
+	cozette-ttf \
+	nerd-fonts-cozette-ttf \
+	python-pywal16 \
+	syncthing-appmenu
 
 FROM ${BASE_IMAGE} AS archxps
 
@@ -29,17 +24,18 @@ RUN pacman --noconfirm -S \
 	git-lfs \
 	sshfs \
 	btop \
+	otf-commit-mono-nerd \
+	thermald \
+	flatpak \
+	base-devel \
+	clang \
+	lld \
+	syncthing \
 	yadm
 
-# Install AUR packages
-COPY --from=scripts aur-install.sh /
-RUN /aur-install.sh \
-	cozette-ttf \
-	python-pywal16 \
-	python-pywalfox
-RUN rm /aur-install.sh
-
 # Install built AUR packages.
-COPY --from=builder /aur /aur
+COPY --from=pkg-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
+
+RUN systemctl enable thermald
