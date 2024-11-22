@@ -53,5 +53,10 @@ COPY --from=pkg-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
+# Enable KSM
+COPY rootfs/usr/lib /usr/lib
+
+# Setup greetd
 RUN systemctl enable greetd
 COPY rootfs/etc/greetd/config.toml /etc/greetd
+
