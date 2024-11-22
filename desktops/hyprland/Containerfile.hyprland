@@ -10,7 +10,7 @@ COPY --from=hyprutils-builder /aur /aur2
 RUN pacman --noconfirm -U /aur2/*
 RUN rm -r /aur2
 
-RUN build-aur \
+RUN build-aur --nocheck \
 	swayosd-git \
 	hyprland-autoname-workspaces-git \
 	hyprpolkitagent-git \
