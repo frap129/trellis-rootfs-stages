@@ -56,6 +56,10 @@ RUN rm -r /aur
 # Enable KSM
 COPY rootfs/usr/lib /usr/lib
 
+# Install uuctl for uwsm
+RUN curl https://raw.githubusercontent.com/Vladimir-csp/uwsm/refs/heads/master/scripts/uuctl.sh -o /usr/bin/uuctl && \
+	chmod +x /usr/bin/uuctl
+
 # Setup greetd
 RUN systemctl enable greetd
 COPY rootfs/etc/greetd/config.toml /etc/greetd
