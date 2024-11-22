@@ -3,6 +3,9 @@
 # Ensure we have proper permisions
 chown builder:builder /home/builder/aur -R
 
+# Ensure package databases are up to date
+pacman -Sy
+
 # Build requested packages
 for pkg in "$@"; do
     if [[ ! -d "/home/builder/aur/$pkg" ]]; then
