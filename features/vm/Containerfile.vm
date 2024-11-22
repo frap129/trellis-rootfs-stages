@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS cli
+
+RUN pacman -S --noconfirm \
+  libvirt \
+  swtpm
+
+FROM cli AS gui
+
+RUN pacman -S --noconfirm \
+  virt-manager
