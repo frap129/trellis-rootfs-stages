@@ -18,7 +18,7 @@ RUN echo 'ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", RUN+="/usr/bin/iw dev 
 RUN echo 'ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"' > /usr/lib/81-disable-wol.rules
 
 # Enable power_save for audio cards
-RUN echo "options snd_hda_intel power_save=1\noptions snd_ac97_codec power_save=1" > /usr/lib/modprobe.d/audio_powersave.conf
+#RUN echo "options snd_hda_intel power_save=1\noptions snd_ac97_codec power_save=1" > /usr/lib/modprobe.d/audio_powersave.conf
 
 FROM localhost/archlinux-ostree-builder AS nicepowerd-builder
 
