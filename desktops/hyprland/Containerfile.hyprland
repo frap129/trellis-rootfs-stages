@@ -11,6 +11,7 @@ RUN pacman --noconfirm -U /aur2/*
 RUN rm -r /aur2
 
 RUN build-aur --nocheck \
+	uwsm \
 	swayosd-git \
 	hyprland-autoname-workspaces-git \
 	hyprpolkitagent-git \
@@ -53,5 +54,4 @@ RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
 RUN systemctl enable greetd
-COPY rootfs/usr/bin/launch_hyprland /usr/bin
 COPY rootfs/etc/greetd/config.toml /etc/greetd
