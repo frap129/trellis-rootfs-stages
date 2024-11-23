@@ -35,6 +35,7 @@ RUN pacman --noconfirm -S \
 	waybar \
 	wofi \
 	swaync \
+	gvfs \
 	clipman \
 	wdisplays \
 	alacritty \
