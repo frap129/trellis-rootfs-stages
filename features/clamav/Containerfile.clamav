@@ -23,6 +23,9 @@ RUN systemctl enable clamav-freshclam-once
 RUN systemctl enable fangfrisch
 RUN systemctl enable clamav-daemon
 
+# Disable topgrade hook
+RUN sed -i "s/\"system\"/\"system\", \"clam_av_db\"/g" /etc/topgrade.toml
+
 FROM cli AS gui
 
 # Install Arch packages
