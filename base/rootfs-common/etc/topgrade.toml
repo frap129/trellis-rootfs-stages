@@ -3,4 +3,4 @@
 disable = ["system"]
 
 [commands]
-"arch-ostree" = "DEPLOYMENT=\"$(dirname /ostree/deploy/*/deploy | rev | cut -d/ -f1 | rev)\" sudo arch-ostree build-builder && sudo arch-ostree build && sudo arch-ostree commit -- -v -b $DEPLOYMENT && sudo ostree admin deploy $DEPLOYMENT"
+"arch-ostree" = "sudo arch-ostree build-builder && sudo arch-ostree build && sudo arch-ostree commit -- -v -b $(dirname /ostree/deploy/*/deploy | rev | cut -d/ -f1 | rev) && sudo ostree admin deploy $(dirname /ostree/deploy/*/deploy | rev | cut -d/ -f1 | rev)"
