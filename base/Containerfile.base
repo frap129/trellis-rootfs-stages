@@ -85,7 +85,8 @@ RUN pacman --noconfirm -S \
 	hunspell-en_us \
 	zip \
 	unzip \
-	bpftune-git
+	bpftune-git \
+	topgrade
 
 # Install built AUR packages.
 COPY --from=pkg-builder /aur /aur
@@ -121,6 +122,12 @@ RUN systemctl enable systemd-zram-setup@zram0
 # Disable coredumps
 COPY rootfs-common/usr/lib/systemd/system.conf.d /usr/lib/systemd/
 COPY rootfs-common/usr/lib/systemd/user.conf.d /usr/lib/systemd/
+
+# Setup topgrade
+COPY rootfs-common/etc/topgrade.toml /etc/
+
+# Copy user skel
+COPY rootfs-common/etc/skel /etc/
 
 # Add some shell aliases
 COPY rootfs-common/etc/profile.d/* /etc/profile.d/
