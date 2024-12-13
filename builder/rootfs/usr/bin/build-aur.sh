@@ -8,18 +8,18 @@ pacman -Sy
 
 # Parse input
 pkgs=()
-args="-fcCs --noconfirm --skippgpcheck"
+args="-fcCs --noconfirm"
 while test $# -gt 0; do
-  case "$1" in
+    case "$1" in
     -*)
-      args="$args $1"
-      shift
-      ;;
+        args="$args $1"
+        shift
+        ;;
     *)
-      pkgs+=("$1")
-      shift
-      ;;
-  esac
+        pkgs+=("$1")
+        shift
+        ;;
+    esac
 done
 
 # Build requested packages
@@ -31,7 +31,7 @@ for pkg in "${pkgs[@]}"; do
     else
         # Update existing sources
         cd /home/builder/aur/$pkg
-        su builder -c "git pull"
+        su builder -c "git reset --hard && git pull"
     fi
 
     # Check if package exists in cache before building
@@ -53,4 +53,3 @@ for pkg in "${pkgs[@]}"; do
     # Copy to staging directory
     cp /home/builder/aur/$pkg/${pkg}-*.pkg.* /aur
 done
- 
