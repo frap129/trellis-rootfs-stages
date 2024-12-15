@@ -11,6 +11,7 @@ FROM ${BASE_IMAGE} AS interactive
 RUN pacman --noconfirm -S \
   ananicy-cpp \
   cachyos-ananicy-rules \
+  scx-scheds \
   plymouth
 
 # Install built AUR packages.
@@ -18,8 +19,14 @@ COPY --from=pkg-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
+# Configure ananicy
 RUN systemctl enable ananicy-cpp
 
+# Configure scx_loader
+COPY rootfs/etc/scx_loader.toml /etc
+RUN systemctl enable scx_loader.service
+
+# Configure plymount
 RUN rm /etc/plymouth/plymouthd.conf
 COPY rootfs/etc/plymouth/plymouthd.conf /etc/plymouth
 
