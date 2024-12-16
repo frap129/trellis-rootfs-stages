@@ -3,7 +3,8 @@ ARG BASE_IMAGE=${BASE_IMAGE}
 # Build AUR packages
 FROM localhost/archlinux-ostree-builder AS pkg-builder
 RUN build-aur \
-	plymouth-theme-bgrt-better-luks
+	plymouth-theme-bgrt-better-luks \
+	scxctl
 
 FROM ${BASE_IMAGE} AS interactive
 
