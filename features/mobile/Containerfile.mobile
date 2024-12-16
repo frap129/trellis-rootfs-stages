@@ -7,18 +7,17 @@ RUN pacman -S --noconfirm \
 	tuned-ppd \
 	iw
 
-# Enable tuned
+# Configure tuned
+COPY rootfs/etc/tuned/ppd.conf /etc/tuned
+COPY rootfs/usr/lib/tuned/profiles /usr/lib/tuned/profiles
 RUN systemctl enable tuned
 RUN systemctl enable tuned-ppd
 
 # Enable power_save for wifi interfaces
-RUN echo 'ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", RUN+="/usr/bin/iw dev $name set power_save on"' > /usr/lib/udev/81-wifi-powersace.rules
+RUN echo 'ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", RUN+="/usr/bin/iw dev $name set power_save on"' > /usr/lib/udev/81-wifi-powersave.rules
 
 # Disable wake-on-lan for all ethernet interfaces
 RUN echo 'ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"' > /usr/lib/81-disable-wol.rules
-
-# Enable power_save for audio cards
-#RUN echo "options snd_hda_intel power_save=1\noptions snd_ac97_codec power_save=1" > /usr/lib/modprobe.d/audio_powersave.conf
 
 FROM localhost/archlinux-ostree-builder AS nicepowerd-builder
 
