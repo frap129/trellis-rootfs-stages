@@ -1,0 +1,47 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+
+FROM localhost/archlinux-ostree-builder AS studio-builder
+RUN build-aur \
+  android-sdk-build-tools \
+	android-studio
+
+FROM ${BASE_IMAGE} AS app
+
+RUN pacman -S --noconfirm \
+  scrcpy \
+  android-udev \
+  bundletool
+
+# Install Android Studio
+COPY --from=studio-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+FROM localhost/archlinux-ostree-builder AS re-tools-builder
+RUN build-aur \
+	dex2jar-git \
+	android-apktool-bin
+
+FROM ${BASE_IMAGE} AS reverse
+
+RUN pacman -S --noconfirm \
+  jadx
+
+# Install reverse engineering tools
+COPY --from=re-tools-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+FROM localhost/archlinux-ostree-builder AS aosp-tools-builder
+RUN build-aur \
+	lineageos-devel \
+  android-studio-for-platform
+
+FROM ${BASE_IMAGE} AS aosp
+
+# Install AOSP deps
+COPY --from=aosp-tools-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+
