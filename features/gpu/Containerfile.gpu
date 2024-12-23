@@ -50,6 +50,7 @@ RUN pacman -S --noconfirm \
   nvidia-prime \
   switcheroo-control
 RUN systemctl enable switcheroo-control
+RUN systemctl enable nvidia-powerd
 RUN rm /etc/profile.d/nvidia-vaapi.sh
 
 # Nvidia Drivers w/ Proprietary Kernel Module
