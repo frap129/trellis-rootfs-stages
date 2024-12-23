@@ -24,6 +24,9 @@ RUN pacman --noconfirm -S \
 	hyprlock \
 	hypridle \
 	ttf-firacode-nerd \
+	xdg-desktop-portal-wlr \
+	xdg-desktop-portal-hyprland \
+	xorg-xwayland \
 	greetd-tuigreet
 
 # Install built AUR packages.
