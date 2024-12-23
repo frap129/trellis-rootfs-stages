@@ -1,28 +1,21 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 
 # Build AUR packages
-FROM localhost/archlinux-ostree-builder AS hyprutils-builder
-RUN build-aur	hyprutils-git
-
 FROM localhost/archlinux-ostree-builder AS pkg-builder
-# Install hyprutils-git first.
-COPY --from=hyprutils-builder /aur /aur2
-RUN pacman --noconfirm -U /aur2/*
-RUN rm -r /aur2
 
-RUN pacman -S --noconfirm otf-font-awesome hyprland
+RUN pacman -S --noconfirm \
+	otf-font-awesome \
+	hyprland \
+	hyprutils
+
 RUN build-aur --nocheck \
 	uwsm \
 	swayosd-git \
 	hyprland-autoname-workspaces-git \
-	hyprpolkitagent-git \
+	hyprpolkitagent \
 	grimshot
 
 FROM ${BASE_IMAGE} AS hyprland
-# Install hyprutils-git first.
-COPY --from=hyprutils-builder /aur /aur
-RUN pacman --noconfirm -U /aur/*
-RUN rm -r /aur
 
 # Install Arch packages
 RUN pacman --noconfirm -S \
