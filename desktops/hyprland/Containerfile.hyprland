@@ -15,7 +15,6 @@ RUN build-aur --nocheck \
 	uwsm \
 	swayosd-git \
 	hyprland-autoname-workspaces-git \
-	hyprland-qtutils-git \ 
 	hyprpolkitagent-git \
 	grimshot
 
