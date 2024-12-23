@@ -10,6 +10,7 @@ COPY --from=hyprutils-builder /aur /aur2
 RUN pacman --noconfirm -U /aur2/*
 RUN rm -r /aur2
 
+RUN pacman -S --noconfirm otf-font-awesome hyprland
 RUN build-aur --nocheck \
 	uwsm \
 	swayosd-git \
