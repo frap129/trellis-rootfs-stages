@@ -33,7 +33,10 @@ RUN pacman --noconfirm -S \
 	lld \
 	rbw \
 	syncthing \
-	yadm
+	yadm \
+	neofetch \
+	npm \
+	bolt
 
 # Install built AUR packages.
 COPY --from=pkg-builder /aur /aur
