@@ -3,7 +3,8 @@ ARG BASE_IMAGE=${BASE_IMAGE}
 FROM ${BASE_IMAGE} AS mesa
 RUN pacman -S --noconfirm \
   mesa \
-  lib32-mesa
+  lib32-mesa \
+  lib32-zlib-ng-compat
 
 # Intel GPU Drivers
 FROM mesa AS intel
@@ -42,7 +43,8 @@ RUN pacman -S --noconfirm \
   lib32-nvidia-utils \
   libva-nvidia-driver \
   vulkan-icd-loader \
-  lib32-vulkan-icd-loader
+  lib32-vulkan-icd-loader \
+  lib32-zlib-ng-compat
 
 # Userspace Nvidia GPU Drivers + PRIME
 FROM nvidia-base AS nvidia-base-prime
