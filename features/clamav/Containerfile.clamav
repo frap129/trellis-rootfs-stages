@@ -16,8 +16,8 @@ COPY --from=pkg-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
-#USER clamav
-#RUN /usr/bin/fangfrisch --conf /etc/fangfrisch/fangfrisch.conf initdb
+USER clamav
+RUN /usr/bin/fangfrisch --conf /etc/fangfrisch/fangfrisch.conf initdb
 USER root
 RUN systemctl enable clamav-freshclam-once
 RUN systemctl enable fangfrisch
