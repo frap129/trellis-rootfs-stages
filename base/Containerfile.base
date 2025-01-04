@@ -101,6 +101,9 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 RUN sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
 
+# Patch grub mkconfig
+RUN sed -i "s|GRUB_DEVICE=\"\`\${grub_probe} --target=device /\`\"|GRUB_DEVICE=\"\`\${grub_probe} --target=device /sysroot\`\"|g" /usr/bin/grub-mkconfig
+
 # Setup chrony
 RUN systemctl disable systemd-timesyncd
 RUN systemctl enable chronyd

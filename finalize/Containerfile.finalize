@@ -1,9 +1,6 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 FROM ${BASE_IMAGE} AS finalize
 
-# Patch grub mkconfig
-RUN sed -i "s|GRUB_DEVICE=\"\`\${grub_probe} --target=device /\`\"|GRUB_DEVICE=\"\`\${grub_probe} --target=device /sysroot\`\"|g" /usr/bin/grub-mkconfig
-
 # Generate initramfs
 COPY --from=scripts dracut-setup.sh /
 RUN /dracut-setup.sh && rm /dracut-setup.sh
