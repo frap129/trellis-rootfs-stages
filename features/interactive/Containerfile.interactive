@@ -12,6 +12,7 @@ FROM ${BASE_IMAGE} AS interactive
 RUN pacman --noconfirm -S \
   ananicy-cpp \
   cachyos-ananicy-rules \
+  cachyos-ksm-settings \
   scx-scheds \
   plymouth
 
@@ -22,6 +23,9 @@ RUN rm -r /aur
 
 # Configure ananicy
 RUN systemctl enable ananicy-cpp
+
+# Enafeble KSM for greetd
+COPY rootfs/usr/lib/systemd/system/greetd.service.d/10-ksm.conf /usr/lib/systemd/system/greetd.service.d/
 
 # Configure scx_loader
 COPY rootfs/etc/scx_loader.toml /etc
