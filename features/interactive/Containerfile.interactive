@@ -4,6 +4,7 @@ ARG BASE_IMAGE=${BASE_IMAGE}
 FROM localhost/archlinux-ostree-builder AS pkg-builder
 RUN build-aur \
 	plymouth-theme-bgrt-better-luks \
+  uresourced \
 	scxctl
 
 FROM ${BASE_IMAGE} AS interactive
@@ -24,14 +25,17 @@ RUN rm -r /aur
 # Configure ananicy
 RUN systemctl enable ananicy-cpp
 
-# Enafeble KSM for greetd
+# Enable KSM for greetd
 COPY rootfs/usr/lib/systemd/system/greetd.service.d/10-ksm.conf /usr/lib/systemd/system/greetd.service.d/
 
 # Configure scx_loader
 COPY rootfs/etc/scx_loader.toml /etc
 RUN systemctl enable scx_loader.service
 
-# Configure plymount
+# Enable uresourced
+RUN systemctl enable uresourced
+
+# Configure plymouth
 RUN rm /etc/plymouth/plymouthd.conf
 COPY rootfs/etc/plymouth/plymouthd.conf /etc/plymouth
 
