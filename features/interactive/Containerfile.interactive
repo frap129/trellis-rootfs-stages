@@ -10,11 +10,15 @@ RUN build-aur \
 
 FROM ${BASE_IMAGE} AS interactive
 
+# Remove zram config from base first
+RUN rm /usr/lib/systemd/zram-generator.conf
+
 # Install Arch packages
 RUN pacman --noconfirm -S \
   ananicy-cpp \
   cachyos-ananicy-rules \
   cachyos-ksm-settings \
+  cachyos-settings \
   scx-scheds \
   plymouth
 
