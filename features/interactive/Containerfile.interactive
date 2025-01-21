@@ -5,6 +5,7 @@ FROM localhost/archlinux-ostree-builder AS pkg-builder
 RUN build-aur \
 	plymouth-theme-bgrt-better-luks \
   uresourced \
+	nohang-git \
 	scxctl
 
 FROM ${BASE_IMAGE} AS interactive
@@ -22,6 +23,10 @@ COPY --from=pkg-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
+# Configure plymouth
+RUN rm /etc/plymouth/plymouthd.conf
+COPY rootfs/etc/plymouth/plymouthd.conf /etc/plymouth
+
 # Configure ananicy
 RUN systemctl enable ananicy-cpp
 
@@ -35,7 +40,6 @@ RUN systemctl enable scx_loader.service
 # Enable uresourced
 RUN systemctl enable uresourced
 
-# Configure plymouth
-RUN rm /etc/plymouth/plymouthd.conf
-COPY rootfs/etc/plymouth/plymouthd.conf /etc/plymouth
-
+# Configure nohang
+RUN systemctl enable nohang-desktop
+RUN sed -i 's|zram_checking_enabled = False|zram_checking_enabled = True|g' /etc/nohang/nohang-desktop.conf
