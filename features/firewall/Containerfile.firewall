@@ -1,0 +1,22 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+
+# Build portmaster from AUR
+FROM localhost/archlinux-ostree-builder AS portmaster-builder
+RUN build-aur portmaster-stub-bin
+
+FROM ${BASE_IMAGE} AS portmaster
+
+# Install built AUR packages.
+COPY --from=portmaster-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
+# Setup portmaster
+RUN systemctl enable portmaster
+RUN mkdir /var/lib/portmaster
+RUN sed -i 's|/opt/safing/portmaster/core-lock.pid|/var/lib/portmaster/core-lock.pid|g' /usr/lib/systemd/system/portmaster.service
+RUN sed -i 's|--data /opt/safing/portmaster|--data /var/lib/portmaster|g' /usr/lib/systemd/system/portmaster.service
+RUN sed -i 's|--data=/opt/safing/portmaster|--data=/var/lib/portmaster|g' \
+  /usr/share/applications/portmaster.desktop \
+  /usr/share/applications/portmaster_notifier.desktop
+
