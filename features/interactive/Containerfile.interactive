@@ -5,6 +5,7 @@ FROM localhost/archlinux-ostree-builder AS pkg-builder
 RUN build-aur \
 	plymouth-theme-bgrt-better-luks \
   uresourced \
+  prelockd \
 	nohang-git \
 	scxctl
 
@@ -47,3 +48,7 @@ RUN systemctl enable uresourced
 # Configure nohang
 RUN systemctl enable nohang-desktop
 RUN sed -i 's|zram_checking_enabled = False|zram_checking_enabled = True|g' /etc/nohang/nohang-desktop.conf
+
+# Configure prelockd
+RUN systemctl enable prelockd
+COPY rootfs/etc/prelockd.conf /etc/
