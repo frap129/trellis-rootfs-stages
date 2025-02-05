@@ -3,7 +3,9 @@ FROM ${BASE_IMAGE} AS cli
 
 RUN pacman -S --noconfirm \
   libvirt \
-  swtpm
+  swtpm \
+  qemu-base \
+  dnsmasq
 
 FROM cli AS gui
 
