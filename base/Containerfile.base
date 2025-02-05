@@ -37,10 +37,6 @@ RUN  pacman-key --init && \
 	mv /etc/pacman.d/cachyos-mirrorlist.pacnew /etc/pacman.d/cachyos-mirrorlist && \
 	pacman -Syu --noconfirm
 
-# Add workaround for dropped caps
-COPY rootfs-base/usr /usr
-RUN systemctl enable fix-caps.service
-
 FROM base AS v3
 
 # Add CachyOS v3 Repos
@@ -140,4 +136,9 @@ COPY rootfs-common/etc/profile.d/* /etc/profile.d/
 
 # Blacklist some unused kernel modules
 COPY rootfs-common/etc/modprobe.d/blacklist.conf /etc/modprobe.d
+
+# Add workaround for dropped caps
+COPY rootfs-common/usr/lib/systemd/system/fix-caps.service /usr/lib/systemd/system
+COPY rootfs-common/usr/bin/fix-caps /usr/bin
+RUN systemctl enable fix-caps.service
 
