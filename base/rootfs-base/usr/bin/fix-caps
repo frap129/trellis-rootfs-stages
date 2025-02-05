@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Manually set capabilities for binaries that lost them
+[ -f "$rootfs/usr/bin/fusermount3" ] && setcap "cap_sys_admin=ep" "$rootfs/usr/bin/fusermount3"

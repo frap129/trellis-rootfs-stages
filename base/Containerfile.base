@@ -37,6 +37,10 @@ RUN  pacman-key --init && \
 	mv /etc/pacman.d/cachyos-mirrorlist.pacnew /etc/pacman.d/cachyos-mirrorlist && \
 	pacman -Syu --noconfirm
 
+# Add workaround for dropped caps
+COPY rootfs-base/usr /usr
+RUN systemctl enable fix-caps.service
+
 FROM base AS v3
 
 # Add CachyOS v3 Repos

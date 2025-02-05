@@ -1,0 +1,13 @@
+[Unit]
+Description=Manually set capabilities for binaries that lost them
+After=local-fs.target sysinit.target
+DefaultDependencies=no
+Before=graphical-session-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/fix-caps
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
