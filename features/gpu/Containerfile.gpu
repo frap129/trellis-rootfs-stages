@@ -13,9 +13,7 @@ RUN pacman -S --noconfirm \
   lib32-libva-intel-driver \
   vulkan-intel \
   lib32-vulkan-intel \
-  intel-media-driver \
-  intel-compute-runtime \
-  intel-oneapi-compiler-shared-runtime
+  intel-media-driver
 
 # AMD GPU Drivers
 FROM mesa AS amd
