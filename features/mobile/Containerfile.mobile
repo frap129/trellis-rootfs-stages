@@ -13,6 +13,9 @@ COPY rootfs/usr/lib/tuned/profiles /usr/lib/tuned/profiles
 RUN systemctl enable tuned
 RUN systemctl enable tuned-ppd
 
+# Spoof powerprofilesctl
+COPY rootfs/usr/bin/powerprofilesctl /usr/bin
+
 # Disable wake-on-lan for all ethernet interfaces
 RUN echo 'ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"' > /usr/lib/81-disable-wol.rules
 
