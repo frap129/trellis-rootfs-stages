@@ -85,7 +85,8 @@ RUN pacman --noconfirm -S \
 	zip \
 	unzip \
 	bpftune-git \
-	topgrade
+	topgrade \
+	sbctl
 
 # Install built AUR packages.
 COPY --from=pkg-builder /aur /aur

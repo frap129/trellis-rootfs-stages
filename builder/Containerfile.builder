@@ -9,7 +9,8 @@ RUN pacman -Sy --noconfirm \
   git \
   grub \
   ostree \
-  rsync
+  rsync \
+  sbctl
 
 # This allows using this container to make a deployment.
 RUN ln -s sysroot/ostree /ostree
