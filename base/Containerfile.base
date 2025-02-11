@@ -135,6 +135,14 @@ COPY rootfs-common/etc/topgrade.toml /etc/
 # Copy user skel
 COPY rootfs-common/etc/skel /etc/
 
+# Setup trim and BTRFS Maintenance
+RUN sed -i 's|BTRFS_BALANCE_MOUNTPOINTS="/"|BTRFS_BALANCE_MOUNTPOINTS="auto"|g' /etc/default/btrfsmaintenance && \
+  sed -i 's|BTRFS_SCRUB_MOUNTPOINTS="/"|BTRFS_SCRUB_MOUNTPOINTS="auto"|g' /etc/default/btrfsmaintenance && \
+  systemctl enable btrfs-balance.timer && \
+  systemctl enable btrfs-scrub.timer && \
+  systemctl enable btrfs-defrag.timer && \
+  systemctl enable fstrim.timer
+
 # Add some shell aliases
 COPY rootfs-common/etc/profile.d/* /etc/profile.d/
 
