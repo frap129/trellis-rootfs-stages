@@ -97,6 +97,9 @@ RUN rm -r /aur
 # That's why we have to create them as part of the rootfs.
 RUN mkdir /efi
 
+# Enable composefs for ostree root
+COPY rootfs-common/usr/lib/ostree/prepare-root.conf /usr/lib/ostree/prepare-root.conf
+
 # Set locale
 RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 RUN sed -i 's/^#\(en_US.UTF-8 UTF-8\)/\1/' /etc/locale.gen
