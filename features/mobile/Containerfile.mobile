@@ -19,7 +19,7 @@ COPY rootfs/usr/bin/powerprofilesctl /usr/bin
 # Disable wake-on-lan for all ethernet interfaces
 RUN echo 'ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"' > /usr/lib/81-disable-wol.rules
 
-FROM localhost/archlinux-ostree-builder AS nicepowerd-builder
+FROM localhost/trellis-builder AS nicepowerd-builder
 
 # Build AUR packages: Build
 USER builder

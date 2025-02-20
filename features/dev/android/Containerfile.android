@@ -1,6 +1,6 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 
-FROM localhost/archlinux-ostree-builder AS studio-builder
+FROM localhost/trellis-builder AS studio-builder
 RUN build-aur \
   android-sdk-build-tools \
 	android-studio
@@ -17,7 +17,7 @@ COPY --from=studio-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
-FROM localhost/archlinux-ostree-builder AS re-tools-builder
+FROM localhost/trellis-builder AS re-tools-builder
 RUN build-aur \
 	dex2jar-git \
 	android-apktool-bin
@@ -32,7 +32,7 @@ COPY --from=re-tools-builder /aur /aur
 RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
-FROM localhost/archlinux-ostree-builder AS aosp-tools-builder
+FROM localhost/trellis-builder AS aosp-tools-builder
 RUN build-aur \
 	lineageos-devel \
   android-studio-for-platform

@@ -1,7 +1,7 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 
 # Build AUR packages
-FROM localhost/archlinux-ostree-builder AS pkg-builder
+FROM localhost/trellis-builder AS pkg-builder
 
 RUN pacman -S --noconfirm \
 	otf-font-awesome \

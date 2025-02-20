@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+aur_cache_dir="/aur-cache"
+
 # Ensure we have proper permisions
-chown builder:builder /home/builder/aur -R
+chown builder:builder $aur_cache_dir -R
 
 # Ensure package databases are up to date
 pacman -Sy
@@ -24,13 +26,13 @@ done
 
 # Build requested packages
 for pkg in "${pkgs[@]}"; do
-    if [[ ! -d "/home/builder/aur/$pkg" ]]; then
+    if [[ ! -d "$aur_cache_dir/$pkg" ]]; then
         # Get sources
-        su builder -c "git clone https://aur.archlinux.org/$pkg.git /home/builder/aur/$pkg"
-        cd /home/builder/aur/$pkg
+        su builder -c "git clone https://aur.archlinux.org/$pkg.git $aur_cache_dir/$pkg"
+        cd $aur_cache_dir/$pkg
     else
         # Update existing sources
-        cd /home/builder/aur/$pkg
+        cd $aur_cache_dir/$pkg
         su builder -c "git reset --hard && git pull"
     fi
 
@@ -51,5 +53,5 @@ for pkg in "${pkgs[@]}"; do
     ($need_build) && su builder -c "makepkg $args"
 
     # Copy to staging directory
-    cp /home/builder/aur/$pkg/${pkg}-*.pkg.* /aur
+    cp $aur_cache_dir/$pkg/${pkg}-*.pkg.* /aur
 done

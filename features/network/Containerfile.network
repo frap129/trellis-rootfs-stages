@@ -22,7 +22,7 @@ RUN systemctl enable connman
 # TODO: MAC Address spoofing
 
 # Build cmst
-FROM localhost/archlinux-ostree-builder AS cmst-builder
+FROM localhost/trellis-builder AS cmst-builder
 RUN build-aur \
 	cmst
 
@@ -34,10 +34,9 @@ RUN pacman --noconfirm -U /aur/*
 RUN rm -r /aur
 
 # Build networkmanager-iwd
-FROM localhost/archlinux-ostree-builder AS nm-iwd-builder
+FROM localhost/trellis-builder AS nm-iwd-builder
 RUN build-aur \
 	networkmanager-iwd
-RUN cp /home/builder/aur/networkmanager-iwd/libnm-iwd*.tar.zst /aur/
 
 FROM iwd AS nm-iwd
 

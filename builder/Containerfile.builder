@@ -26,7 +26,6 @@ RUN pacman --noconfirm -Syu base-devel git sudo
 RUN useradd -m builder
 RUN echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/builder
 USER builder
-RUN mkdir /home/builder/aur/
 USER root
 RUN mkdir /aur
 COPY /rootfs/usr/bin/build-aur.sh /usr/bin/build-aur

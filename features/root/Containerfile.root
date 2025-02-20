@@ -20,7 +20,7 @@ RUN echo "permit setenv {PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin}
   chmod -c 0400 /etc/doas.conf
 
 
-FROM localhost/archlinux-ostree-builder AS fudo-builder
+FROM localhost/trellis-builder AS fudo-builder
 RUN build-aur \
 	fudo-git
 
