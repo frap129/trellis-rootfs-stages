@@ -5,26 +5,25 @@ FROM localhost/archlinux-ostree-builder AS pkg-builder
 
 RUN pacman -S --noconfirm \
 	otf-font-awesome \
-	hyprland \
-	hyprutils
+	hyprland
 
 RUN build-aur --nocheck \
-	uwsm \
 	swayosd-git \
 	hyprland-autoname-workspaces-git \
-	hyprpolkitagent \
 	grimshot
 
 FROM ${BASE_IMAGE} AS hyprland
 
 # Install Arch packages
 RUN pacman --noconfirm -S \
+	uwsm \
 	hyprland \
 	hyprpaper \
 	hypridle \
 	hyprlock \
 	hyprcursor \
 	hyprpicker \
+	hyprpolkitagent \
 	wlsunset \
 	waybar \
 	wofi \
