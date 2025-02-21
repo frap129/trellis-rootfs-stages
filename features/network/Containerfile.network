@@ -30,8 +30,7 @@ FROM connman AS connman-gui
 
 # Install cmst
 COPY --from=cmst-builder /aur /aur
-RUN pacman --noconfirm -U /aur/*
-RUN rm -r /aur
+RUN pacman --noconfirm -U /aur/* && rm -r /aur
 
 # Build networkmanager-iwd
 FROM localhost/trellis-builder AS nm-iwd-builder
@@ -42,9 +41,9 @@ FROM iwd AS nm-iwd
 
 # Install networkmanager-iwd
 COPY --from=nm-iwd-builder /aur /aur
-RUN pacman --noconfirm -U /aur/libnm-iwd*
-RUN pacman --noconfirm -U /aur/networkmanager-iwd*
-RUN rm -r /aur
+RUN pacman --noconfirm -U /aur/libnm-* && \
+  pacman --noconfirm -U /aur/networkmanager-* && \
+	rm -r /aur
 
 RUN systemctl enable NetworkManager
 COPY rootfs-nm/usr/lib/NetworkManager/conf.d/* /usr/lib/NetworkManager/conf.d
