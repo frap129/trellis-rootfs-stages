@@ -38,12 +38,12 @@ for pkg in "${pkgs[@]}"; do
 
     # Check if package exists in cache before building
     need_build=false
-    for filename in "$(su builder -c 'makepkg --packagelist')"; do
-        filename="$(echo $filename | rev | cut -d/ -f1 | rev)"
+    for filename in $(su builder -c 'makepkg --packagelist'); do
         if [[ -f "$filename" ]]; then
             echo "$filename already built"
         else
             need_build=true
+            echo "$filename not built or needs update"
             rm *.pkg.tar.zst
             break
         fi
@@ -53,5 +53,5 @@ for pkg in "${pkgs[@]}"; do
     ($need_build) && su builder -c "makepkg $args"
 
     # Copy to staging directory
-    cp $aur_cache_dir/$pkg/${pkg}-*.pkg.* /aur
+    cp $aur_cache_dir/$pkg/*.pkg.* /aur
 done
