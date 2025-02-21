@@ -7,7 +7,7 @@ RUN pacman -S --noconfirm \
 	otf-font-awesome \
 	hyprland
 
-RUN build-aur --nocheck \
+RUN build-aur \
 	swayosd-git \
 	hyprland-autoname-workspaces-git \
 	grimshot
