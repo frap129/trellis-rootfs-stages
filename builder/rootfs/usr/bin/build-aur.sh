@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-aur_cache_dir="/aur-cache"
+aur_cache_dir="/var/cache/trellis/aur"
 
 # Ensure we have proper permisions
 chown builder:builder $aur_cache_dir -R
