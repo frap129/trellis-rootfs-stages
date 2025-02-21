@@ -3,4 +3,4 @@
 disable = ["system"]
 
 [commands]
-"arch-ostree" = "sudo arch-ostree update"
+"trellis" = "sudo trls update"
