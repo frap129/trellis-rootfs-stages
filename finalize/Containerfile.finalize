@@ -1,8 +1,11 @@
-ARG BASE_IMAGE=${BASE_IMAGE}
+ARG BASE_IMAGE
+
 FROM ${BASE_IMAGE} AS finalize
+ARG HOOKS_DIR
+ENV HOOKS_DIR=$HOOKS_DIR
 
 # Run hooks
-RUN bash -c 'for hook in /hooks/*; do bash $hook; done'
+RUN cd ${HOOKS_DIR} && bash -c 'for hook in ./*; do bash $hook; done'
 
 # Add ostree tmpfile
 COPY rootfs/usr/lib/tmpfiles.d/ostree-0-integration.conf /usr/lib/tmpfiles.d/
