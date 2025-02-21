@@ -1,8 +1,8 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 FROM ${BASE_IMAGE} AS finalize
 
-COPY scripts/dracut-setup.sh /dracut-setup.sh
-RUN /dracut-setup.sh && rm /dracut-setup.sh
+# Run hooks
+RUN bash -c 'for hook in /hooks/*; do bash $hook; done'
 
 # Add ostree tmpfile
 COPY rootfs/usr/lib/tmpfiles.d/ostree-0-integration.conf /usr/lib/tmpfiles.d/
