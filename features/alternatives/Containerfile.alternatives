@@ -1,0 +1,12 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+
+FROM localhost/trellis-builder AS uutils-builder
+RUN build-aur \
+	coreutils-uutils
+
+FROM ${BASE_IMAGE} AS uutils
+
+# Install uutils
+COPY --from=uutils-builder /aur /aur
+RUN yes | pacman -U /aur/*
+RUN rm -r /aur
