@@ -4,7 +4,8 @@ FROM ${BASE_IMAGE} AS mesa
 RUN pacman -S --noconfirm \
   mesa \
   lib32-mesa \
-  lib32-zlib-ng-compat
+  lib32-zlib-ng-compat \
+  gst-plugin-va
 
 # Intel GPU Drivers
 FROM mesa AS intel
