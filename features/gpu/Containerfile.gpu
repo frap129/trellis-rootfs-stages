@@ -8,12 +8,17 @@ RUN pacman -S --noconfirm \
   gst-plugin-va
 
 # Intel GPU Drivers
-FROM mesa AS intel
+FROM mesa AS intel-base
 RUN pacman -S --noconfirm \
-  libva-intel-driver \
-  lib32-libva-intel-driver \
   vulkan-intel \
-  lib32-vulkan-intel \
+  lib32-vulkan-intel
+
+FROM intel-base as intel-broadwell
+RUN pacman -S --noconfirm \
+  libva-intel-driver-irql
+
+FROM intel-base as intel
+RUN pacman -S --noconfirm \
   intel-media-driver
 
 # AMD GPU Drivers
