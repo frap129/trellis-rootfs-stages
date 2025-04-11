@@ -1,5 +1,5 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
-FROM ${BASE_IMAGE} AS mobile
+FROM ${BASE_IMAGE} AS generic
 
 # Install packages
 RUN pacman -S --noconfirm \
@@ -19,26 +19,12 @@ COPY rootfs/usr/bin/powerprofilesctl /usr/bin
 # Disable wake-on-lan for all ethernet interfaces
 RUN echo 'ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"' > /usr/lib/81-disable-wol.rules
 
-FROM localhost/trellis-builder AS nicepowerd-builder
+FROM generic as intel
+# Install packages
+RUN pacman -S --noconfirm \
+	thermald \
+	intel-lpmd
 
-# Build AUR packages: Build
-USER builder
-RUN git clone https://github.com/frap129/nicepowerd /home/builder/nicepowerd
-RUN cd /home/builder/nicepowerd/pkg && makepkg -s --noconfirm
-USER root
-
-# Build AUR packages: Copy packages to a common place.
-RUN cp /home/builder/nicepowerd/pkg/*.tar.zst /aur/
-
-# Variant with nicepowerd for alt desktops
-FROM mobile as mobile-alt
-
-# Install built AUR packages.
-COPY --from=nicepowerd-builder /aur /aur
-RUN pacman --noconfirm -U /aur/*
-RUN rm -r /aur
-
-# Configure nicepowerd
-RUN systemctl enable nicepowerd
-COPY rootfs-nicepowerd/etc/nicepowerd /etc/nicepowerd
+RUN systemctl enable thermald
+RUN systemctl enable intel_lpmd
 
