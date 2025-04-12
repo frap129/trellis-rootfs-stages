@@ -3,11 +3,10 @@ ARG BASE_IMAGE=${BASE_IMAGE}
 # Build AUR packages
 FROM localhost/trellis-builder AS pkg-builder
 RUN build-aur \
-	plymouth-theme-bgrt-better-luks \
+  plymouth-theme-bgrt-better-luks \
   uresourced \
   prelockd \
-	nohang-git \
-	scxctl
+  nohang-git
 
 FROM ${BASE_IMAGE} AS interactive
 
