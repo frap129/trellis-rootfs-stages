@@ -19,11 +19,29 @@ COPY rootfs/usr/bin/powerprofilesctl /usr/bin
 # Disable wake-on-lan for all ethernet interfaces
 RUN echo 'ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"' > /usr/lib/81-disable-wol.rules
 
+
+FROM localhost/trellis-builder AS lpmd-builder
+
+# Build intel_lpmd with proper state dir
+USER builder
+WORKDIR /home/builder/intel_lpmd/
+RUN git clone https://aur.archlinux.org/intel-lpmd.git . && \
+	sed -i "s|prefix=/usr|prefix=/usr localstatedir=/var|g" PKGBUILD && \
+	makepkg -s --noconfirm
+
+# Build AUR packages: Copy packages to a common place.
+USER root
+RUN cp /home/builder/intel_lpmd/*.tar.zst /aur/
+
 FROM generic as intel
+# Install built AUR packages.
+COPY --from=lpmd-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
+
 # Install packages
 RUN pacman -S --noconfirm \
-	thermald \
-	intel-lpmd
+	thermald
 
 RUN systemctl enable thermald
 RUN systemctl enable intel_lpmd
