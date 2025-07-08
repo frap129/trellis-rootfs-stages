@@ -31,8 +31,8 @@ RUN pacman -S --noconfirm \
 # General Mesa OpenCL support
 FROM ${BASE_IMAGE} AS mesa-opencl
 RUN pacman -S --noconfirm \
-  opencl-rusticl-mesa \
-  lib32-opencl-rusticl-mesa
+  opencl-mesa \
+  lib32-opencl-mesa
 
 # Userspace Nvidia GPU Drivers
 FROM ${BASE_IMAGE} AS nvidia-base
