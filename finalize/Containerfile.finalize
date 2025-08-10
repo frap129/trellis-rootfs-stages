@@ -7,9 +7,6 @@ ENV HOOKS_DIR=$HOOKS_DIR
 # Run hooks
 RUN cd ${HOOKS_DIR} && bash -c 'for hook in ./*; do bash $hook; done'
 
-# Add ostree tmpfile
-COPY rootfs/usr/lib/tmpfiles.d/ostree-0-integration.conf /usr/lib/tmpfiles.d/
-
 # Move pacman db to /usr since /var will be a mount
 RUN sed -i \
     -e 's|^#\(DBPath\s*=\s*\).*|\1/usr/lib/pacman|g' \
