@@ -9,3 +9,6 @@ RUN pacman --noconfirm -S \
 # Enable usdisk2
 RUN systemctl enable udisks2
 
+# Disable locale cache server
+RUN systemctl mask passim.service
+
