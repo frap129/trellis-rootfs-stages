@@ -3,7 +3,7 @@
 . /usr/lib/tuned/functions
 
 start() {
-    scxctl switch -m gaming
+    scxctl switch -m powersave
     return 0
 }
 
