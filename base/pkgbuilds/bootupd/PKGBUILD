@@ -1,0 +1,42 @@
+pkgname=bootupd
+pkgver=0.2.30
+pkgrel=1
+pkgdesc="Bootloader updater"
+arch=('x86_64' 'aarch64')
+url="https://github.com/coreos/bootupd"
+license=('Apache-2.0' 'MIT')
+depends=('systemd')
+makedepends=('cargo' 'openssl')
+source=("bootupd-${pkgver}.crate::${url}/releases/download/v${pkgver}/bootupd-${pkgver}.crate"
+  "bootupd-${pkgver}-vendor.tar.zstd::${url}/releases/download/v${pkgver}/bootupd-${pkgver}-vendor.tar.zstd")
+sha256sums=('SKIP' 'SKIP')
+
+prepare() {
+  # Extract the .crate file (which is actually a tar.gz archive)
+  tar -xzf "${srcdir}/${pkgname}-${pkgver}.crate"
+
+  cd "${pkgname}-${pkgver}"
+
+  # Extract vendor dependencies
+  cp -R ../vendor vendor
+
+  # Configure cargo to use vendored dependencies
+  mkdir -p .cargo
+  cat >.cargo/config.toml <<EOF
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "vendor"
+EOF
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --release --frozen --offline
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  make install DESTDIR="${pkgdir}"
+}
