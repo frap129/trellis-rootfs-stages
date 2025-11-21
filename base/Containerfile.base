@@ -79,8 +79,7 @@ RUN pacman --noconfirm -S \
 	systemd-resolvconf \
 	zram-generator \
 	zsh \
-	ripgrep \
-	python-pipx \
+	ugrep \
 	logrotate \
 	man-db \
 	man-pages \
