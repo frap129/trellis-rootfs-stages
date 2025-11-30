@@ -153,6 +153,10 @@ RUN sed -i 's|BTRFS_BALANCE_MOUNTPOINTS="/"|BTRFS_BALANCE_MOUNTPOINTS="auto"|g' 
 # Add some shell aliases
 COPY rootfs-common/etc/profile.d/* /etc/profile.d/
 
+# Add rg script for ugrep compatibility
+COPY rootfs-common/usr/bin/rg /usr/bin/rg
+RUN chmod +x /usr/bin/rg
+
 # Blacklist some unused kernel modules
 COPY rootfs-common/etc/modprobe.d/blacklist.conf /etc/modprobe.d
 
