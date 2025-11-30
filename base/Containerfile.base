@@ -66,6 +66,7 @@ RUN pacman --noconfirm -S \
 	grub \
 	ostree \
 	podman \
+	dosfstools \
 	which \
 	less \
 	openssh \
