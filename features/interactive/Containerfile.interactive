@@ -31,6 +31,9 @@ RUN rm -r /aur
 RUN rm /etc/plymouth/plymouthd.conf
 COPY rootfs/etc/plymouth/plymouthd.conf /etc/plymouth
 
+# Add dracut drop-in to enable plymouth module only for interactive targets
+COPY rootfs/usr/lib/dracut/dracut.conf.d/50-plymouth.conf /usr/lib/dracut/dracut.conf.d/
+
 # Configure ananicy
 RUN systemctl enable ananicy-cpp
 
