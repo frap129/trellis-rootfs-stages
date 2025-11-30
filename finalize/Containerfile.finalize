@@ -7,7 +7,7 @@ ENV HOOKS_DIR=$HOOKS_DIR
 # Run hooks
 RUN cd ${HOOKS_DIR} && bash -c 'for hook in ./*; do bash $hook; done'
 
-# Move pacman db to /usr since /var will be a mount
+# Move pacman db to /usr/lib/ for bootc compatibility
 RUN sed -i \
     -e 's|^#\(DBPath\s*=\s*\).*|\1/usr/lib/pacman|g' \
     -e 's|^#\(IgnoreGroup\s*=\s*\).*|\1modified|g' \
@@ -17,14 +17,23 @@ RUN sed -i \
 # Cleanup pacman sockets
 RUN find /etc -type s -exec rm {} \;
 
-# Alter root file structure a bit for ostree
-RUN mkdir /sysroot && \
-    rm -rf /boot/* /var/log /home /root /usr/local /srv && \
+# Set useradd HOME to /var/home for bootc compatibility
+RUN sed -i 's|^HOME=.*|HOME=/var/home|' "/etc/default/useradd"
+
+# Alter root file structure for ostree and bootc compatibility
+RUN rm -rf /boot /home /root /usr/local /srv /var/log /usr/lib/sysimage/cache/pacman/pkg && \
+    mkdir -p /sysroot /boot /usr/lib/ostree && \
     ln -s sysroot/ostree /ostree && \
-    ln -s var/home /home && \
     ln -s var/roothome /root && \
-    ln -s ../var/usrlocal /usr/local && \
-    ln -s var/srv /srv
+    ln -s var/srv /srv && \
+    ln -s var/opt /opt && \
+    ln -s var/mnt /mnt && \
+    ln -s var/home /home && \
+    ln -s ../var/usrlocal /usr/local
+
+# Create tmpfiles.d configuration for bootc compatibility
+RUN echo "$(for dir in opt home srv mnt usrlocal ; do echo "d /var/$dir 0755 root root -" ; done)" | tee -a "/usr/lib/tmpfiles.d/bootc-base-dirs.conf" && \
+    printf "d /var/roothome 0700 root root -\nd /run/media 0755 root root -" | tee -a "/usr/lib/tmpfiles.d/bootc-base-dirs.conf"
 
 # Necessary labels
 LABEL containers.bootc 1
