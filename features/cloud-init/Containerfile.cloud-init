@@ -1,0 +1,15 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS cloud-init
+
+# Install cloud-init package
+RUN pacman --noconfirm -S cloud-init
+
+# Enable cloud-init target
+RUN ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants
+
+# Copy cloud-init configuration for bootc
+COPY rootfs/etc/cloud/cloud.cfg.d/10_bootc.cfg /etc/cloud/cloud.cfg.d/
+
+# Copy bootc install configuration
+COPY rootfs/usr/lib/bootc/install/05-cloud-kargs.toml /usr/lib/bootc/install/
+

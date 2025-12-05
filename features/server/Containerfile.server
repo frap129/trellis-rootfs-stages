@@ -1,0 +1,28 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} AS server
+
+COPY rootfs/ /
+
+# SSH: Enable (default config allows password auth for bootstrapping)
+RUN systemctl enable sshd.service
+
+# Reduce TTYs: Only tty1 needed for headless
+RUN systemctl mask getty@tty2.service \
+    && systemctl mask getty@tty3.service \
+    && systemctl mask getty@tty4.service \
+    && systemctl mask getty@tty5.service \
+    && systemctl mask getty@tty6.service
+
+#-----------------------------------------------------------
+FROM server AS server-serial
+
+COPY rootfs-serial/ /
+
+RUN systemctl enable serial-getty@ttyS0.service
+
+#-----------------------------------------------------------
+FROM server AS server-virtio
+
+COPY rootfs-virtio/ /
+
+RUN systemctl enable serial-getty@hvc0.service

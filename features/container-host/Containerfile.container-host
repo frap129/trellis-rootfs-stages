@@ -1,0 +1,15 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} AS container-host
+
+# Additional OCI tooling
+RUN pacman -S --noconfirm --needed \
+    skopeo \
+    buildah
+
+COPY rootfs/ /
+
+# Enable podman socket for remote API access
+RUN systemctl enable podman.socket
+
+# Enable automatic container updates
+RUN systemctl enable podman-auto-update.timer

@@ -1,0 +1,10 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} AS cockpit
+
+RUN pacman -S --noconfirm --needed \
+    cockpit \
+    cockpit-storaged \
+    cockpit-podman \
+    packagekit
+
+RUN systemctl enable cockpit.socket
