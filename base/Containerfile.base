@@ -62,6 +62,7 @@ FROM ${BASE_IMAGE} AS common
 # Install packages
 RUN pacman --noconfirm -S \
 	linux-cachyos \
+	linux-cachyos-headers \
 	efibootmgr \
 	grub \
 	ostree \
