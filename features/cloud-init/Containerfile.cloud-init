@@ -2,7 +2,7 @@ ARG BASE_IMAGE=${BASE_IMAGE}
 FROM ${BASE_IMAGE} AS cloud-init
 
 # Install cloud-init package
-RUN pacman --noconfirm -S cloud-init
+RUN pacman --noconfirm -S cloud-init qemu-guest-agent
 
 # Enable cloud-init target
 RUN ln -s ../cloud-init.target /usr/lib/systemd/system/default.target.wants
