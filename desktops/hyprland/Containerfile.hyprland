@@ -8,9 +8,10 @@ RUN pacman -S --noconfirm \
 	hyprland
 
 RUN build-aur \
-	swayosd-git \
 	hyprland-autoname-workspaces-git \
-	grimshot
+	grimshot \
+	app2unit-git && \
+	build-aur --skippgpcheck wluma
 
 FROM ${BASE_IMAGE} AS hyprland
 
@@ -18,29 +19,21 @@ FROM ${BASE_IMAGE} AS hyprland
 RUN pacman --noconfirm -S \
 	uwsm \
 	hyprland \
-	hyprpaper \
 	hypridle \
-	hyprlock \
 	hyprcursor \
 	hyprpicker \
+	hyprtoolkit \
 	hyprpolkitagent \
+	hyprshot \
 	wlsunset \
-	waybar \
-	wofi \
-	swaync \
 	gvfs \
-	clipman \
 	wdisplays \
-	alacritty \
 	ttf-firacode-nerd \
-	cosmic-files \
-	cosmic-store \
-	cosmic-settings \
-	cosmic-screenshot \
 	xdg-desktop-portal-hyprland \
 	xdg-desktop-portal-gtk \
 	xorg-xwayland \
-	greetd-tuigreet
+	greetd-tuigreet \
+	ddcutil
 
 # Install built AUR packages.
 COPY --from=pkg-builder /aur /aur
@@ -54,4 +47,13 @@ RUN curl https://raw.githubusercontent.com/Vladimir-csp/uwsm/refs/heads/master/s
 # Setup greetd
 RUN systemctl enable greetd
 COPY rootfs/etc/greetd/config.toml /etc/greetd
+
+FROM hyprland AS noctalia
+
+RUN pacman --noconfirm -S \
+	cava \
+	noctalia-shell \
+	wl-clipboard \
+	cliphist
+
 
