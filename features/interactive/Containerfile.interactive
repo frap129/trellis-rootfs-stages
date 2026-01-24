@@ -56,4 +56,4 @@ RUN systemctl enable prelockd
 COPY rootfs/etc/prelockd.conf /etc/
 
 # Disable split lock mitigate
-COPY rootfs/usr/lib/sysctl.d/99-splitlock.conf /usr/lib/sysctl.d/
+COPY rootfs/usr/lib/sysctl.d/98-splitlock.conf /usr/lib/sysctl.d/
