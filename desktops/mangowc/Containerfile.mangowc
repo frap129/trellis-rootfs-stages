@@ -1,0 +1,52 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+
+FROM ${BASE_IMAGE} AS mangowc
+
+# Install Arch packages
+RUN pacman --noconfirm -S \
+	uwsm \
+	mangowc \
+	hypridle \
+	wlsunset \
+	gvfs \
+	wdisplays \
+	ttf-firacode-nerd \
+	xdg-desktop-portal-hyprland \
+	xdg-desktop-portal-wlr \
+	xdg-desktop-portal-gtk \
+	xorg-xwayland \
+	greetd-tuigreet \
+	pipewire-audio \
+	pipewire-pulse \
+	wireplumber \
+	ddcutil
+
+# Install uuctl for uwsm
+RUN curl https://raw.githubusercontent.com/Vladimir-csp/uwsm/refs/heads/master/scripts/uuctl.sh -o /usr/bin/uuctl && \
+	chmod +x /usr/bin/uuctl
+
+# Setup greetd
+RUN systemctl enable greetd
+COPY rootfs/etc/greetd/config.toml /etc/greetd
+COPY rootfs/usr/share/wayland-sessions/mango-uwsm.desktop /usr/share/wayland-sessions
+COPY rootfs/etc/xdg/xdg-desktop-portal/mango-portals.conf /etc/xdg/xdg-desktop-portal
+
+# Build AUR packages
+FROM localhost/trellis-builder AS noctalia-builder
+
+RUN build-aur \
+	noctalia \
+	noctalia-unofficial-auth-agent-git
+
+FROM mangowc AS noctalia
+
+RUN pacman --noconfirm -S \
+	cava \
+	noctalia-shell \
+	wl-clipboard \
+	cliphist
+
+# Install built AUR packages.
+COPY --from=noctalia-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur

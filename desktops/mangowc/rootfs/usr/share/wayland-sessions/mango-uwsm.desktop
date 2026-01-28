@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=MangoWC (UWSM)
+Comment=MangoWC compositor via UWSM
+Exec=uwsm start -- mango
+TryExec=uwsm
+DesktopNames=mango:wlroots
+Type=Application
