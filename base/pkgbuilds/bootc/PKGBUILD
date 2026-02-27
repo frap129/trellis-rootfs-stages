@@ -1,12 +1,12 @@
 pkgname=bootc
-pkgver=1.12.1
+pkgver=1.13.0
 pkgrel=1
 pkgdesc="Bootable container system"
 arch=('x86_64' 'aarch64')
 url="https://github.com/containers/bootc"
 license=('Apache-2.0' 'MIT')
-depends=('composefs' 'ostree' 'skopeo' 'podman' 'bootupd')
-makedepends=('make' 'openssl' 'systemd' 'cargo')
+depends=('composefs' 'ostree' 'skopeo' 'podman')
+makedepends=('make' 'openssl' 'systemd' 'cargo' 'go-md2man')
 source=("bootc-${pkgver}.tar.zstd::${url}/releases/download/v${pkgver}/bootc-${pkgver}.tar.zstd"
   "bootc-${pkgver}-vendor.tar.zstd::${url}/releases/download/v${pkgver}/bootc-${pkgver}-vendor.tar.zstd")
 sha256sums=('SKIP' 'SKIP')
@@ -19,7 +19,8 @@ prepare() {
 
 build() {
   cd "${pkgname}-${pkgver}"
-  cargo build --release --frozen
+  cargo build --release --frozen --bins
+  make manpages
 }
 
 package() {
