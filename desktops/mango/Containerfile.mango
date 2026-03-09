@@ -1,11 +1,24 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 
-FROM ${BASE_IMAGE} AS mangowc
+# Build AUR packages
+FROM localhost/trellis-builder AS mango-builder
+
+RUN build-aur \
+	app2unit-git && \
+	build-aur --skippgpcheck wluma \
+	mangowm
+
+
+FROM ${BASE_IMAGE} AS mango
+
+# Install built AUR packages.
+COPY --from=mango-builder /aur /aur
+RUN pacman --noconfirm -U /aur/*
+RUN rm -r /aur
 
 # Install Arch packages
 RUN pacman --noconfirm -S \
 	uwsm \
-	mangowc \
 	hypridle \
 	wlsunset \
 	gvfs \
@@ -19,7 +32,7 @@ RUN pacman --noconfirm -S \
 	pipewire-audio \
 	pipewire-pulse \
 	wireplumber \
-	ddcutil
+	ddcci-driver-linux-dkms-git
 
 # Install uuctl for uwsm
 RUN curl https://raw.githubusercontent.com/Vladimir-csp/uwsm/refs/heads/master/scripts/uuctl.sh -o /usr/bin/uuctl && \
@@ -38,7 +51,7 @@ RUN build-aur \
 	noctalia \
 	noctalia-unofficial-auth-agent-git
 
-FROM mangowc AS noctalia
+FROM mango AS noctalia
 
 RUN pacman --noconfirm -S \
 	cava \
