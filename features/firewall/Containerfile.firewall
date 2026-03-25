@@ -1,12 +1,14 @@
 ARG BASE_IMAGE=${BASE_IMAGE}
 
 # Build portmaster from AUR
-FROM localhost/archlinux-ostree-builder AS portmaster-builder
-RUN build-aur portmaster-stub-bin
+FROM localhost/trellis-builder AS pkg-builder
+RUN build-aur \
+  portmaster-bin
 
 FROM ${BASE_IMAGE} AS portmaster
-COPY scripts/install_portmaster.sh /portmaster.sh
-RUN bash /portmaster.sh && rm /portmaster.sh
+COPY --from=pkg-builder /aur /aur
+RUN pacman -U --noconfirm /aur/*
+RUN rm -r /aur
 
 FROM ${BASE_IMAGE} as firewalld
 RUN pacman -S --noconfirm firewalld && systemctl enable firewalld
