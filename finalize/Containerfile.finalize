@@ -21,7 +21,8 @@ RUN find /etc -type s -exec rm {} \;
 RUN sed -i 's|^HOME=.*|HOME=/var/home|' "/etc/default/useradd"
 
 # Alter root file structure for ostree and bootc compatibility
-RUN rm -rf /boot /home /root /usr/local /srv /var/log /usr/lib/sysimage/cache/pacman/pkg && \
+RUN mv /opt /var/opt && \
+    rm -rf /boot /home /root /usr/local /srv /var/log /mnt /usr/lib/sysimage/cache/pacman/pkg && \
     mkdir -p /sysroot /boot /usr/lib/ostree && \
     ln -s sysroot/ostree /ostree && \
     ln -s var/roothome /root && \
