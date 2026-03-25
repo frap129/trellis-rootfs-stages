@@ -85,6 +85,7 @@ RUN pacman --noconfirm -S \
 	neovim \
 	bash-completion \
 	btrfs-progs \
+	xfsprogs \
 	distrobox \
 	exfatprogs \
 	hunspell-en_us \
@@ -122,6 +123,7 @@ COPY rootfs-common/etc/chrony.conf /etc/
 # Configure DNS resolution
 COPY rootfs-common/usr/lib/systemd/resolved.conf.d /usr/lib/systemd/
 RUN systemctl enable systemd-resolved
+RUN ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 # System tuning
 COPY rootfs-common/usr/lib/sysctl.d/* /usr/lib/sysctl.d/
