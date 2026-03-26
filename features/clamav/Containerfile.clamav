@@ -26,7 +26,7 @@ RUN systemctl enable clamav-daemon
 # Disable topgrade hook
 RUN sed -i "s/\"system\"/\"system\", \"clam_av_db\"/g" /etc/topgrade.toml
 
-FROM cli AS gui
+FROM clamav AS gui
 
 # Install Arch packages
 RUN pacman --noconfirm -S \
