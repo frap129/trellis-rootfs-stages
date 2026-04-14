@@ -28,6 +28,9 @@ RUN build-aur \
 	btrfsmaintenance \
 	-l bootc
 
+RUN pacman -U --noconfirm /aur/bootc-*.pkg* && \
+	build-aur -l trls
+
 # Turn the pacstrapped rootfs into a container image.
 FROM scratch AS base
 COPY --from=rootfs-builder /mnt /
@@ -85,6 +88,7 @@ RUN pacman --noconfirm -S \
 	neovim \
 	bash-completion \
 	btrfs-progs \
+	xfsprogs \
 	distrobox \
 	exfatprogs \
 	hunspell-en_us \

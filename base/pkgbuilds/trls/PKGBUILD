@@ -1,0 +1,35 @@
+# Maintainer: Joe Maples <joe@maples.dev>
+pkgname=trellis-git
+pkgver=0.1.0.r0.gCAFEBAB
+pkgrel=1
+pkgdesc="A container build system for multi-stage bootc builds with Podman"
+arch=('x86_64' 'aarch64')
+url="https://github.com/frap129/trls"
+license=('MIT')
+depends=('podman' 'bootc')
+makedepends=('cargo' 'git')
+provides=('trellis' 'trls')
+conflicts=('trellis')
+source=("${pkgname}::git+https://github.com/frap129/trls.git")
+sha256sums=('SKIP')
+
+prepare() {
+    cd "$pkgname"
+    export RUSTUP_TOOLCHAIN=stable
+    cargo fetch --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    cd "$pkgname"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo build --release
+}
+
+package() {
+    cd "$pkgname"
+    install -Dm755 "target/release/trls" "$pkgdir/usr/bin/trls"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -dm755 "$pkgdir/var/lib/trellis/stages"
+    install -dm755 "$pkgdir/var/cache/trellis/aur"
+}
