@@ -3,6 +3,7 @@ ARG BASE_IMAGE=${BASE_IMAGE}
 # Build portmaster from AUR
 FROM localhost/trellis-builder AS pkg-builder
 RUN build-aur \
+  libsoup \
   portmaster-bin
 
 FROM ${BASE_IMAGE} AS portmaster
