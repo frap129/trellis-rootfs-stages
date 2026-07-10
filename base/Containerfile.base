@@ -26,6 +26,7 @@ RUN build-aur \
 	yay-bin \
 	fetchmirrors \
 	btrfsmaintenance \
+	topgrade \
 	-l bootc
 
 RUN pacman -U --noconfirm /aur/bootc-*.pkg* && \
@@ -95,7 +96,6 @@ RUN pacman --noconfirm -S \
 	zip \
 	unzip \
 	bpftune-git \
-	topgrade \
 	sbctl
 
 # Install built AUR packages.
