@@ -1,5 +1,5 @@
 pkgname=bootc
-pkgver=1.15.2
+pkgver=1.16.6
 pkgrel=1
 pkgdesc="Bootable container system"
 arch=('x86_64' 'aarch64')
