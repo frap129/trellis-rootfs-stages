@@ -5,7 +5,6 @@ FROM localhost/trellis-builder AS rootfs-builder
 RUN pacstrap -c -G -M /mnt \
 	base \
 	linux-firmware \
-	dracut \
 	intel-ucode \
 	amd-ucode \
 	wget
@@ -27,6 +26,7 @@ RUN build-aur \
 	fetchmirrors \
 	btrfsmaintenance \
 	topgrade \
+	dracut-git \
 	-l bootc
 
 RUN pacman -U --noconfirm /aur/bootc-*.pkg* && \
