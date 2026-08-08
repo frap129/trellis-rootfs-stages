@@ -1,2 +1,0 @@
-#!/bin/bash
-exec ugrep -r --ignore-files --ignore-files=.ignore --ignore-files=.rgignore -I -n --heading --break "$@"
