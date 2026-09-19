@@ -5,7 +5,7 @@ pkgdesc="Bootable container system"
 arch=('x86_64' 'aarch64')
 url="https://github.com/containers/bootc"
 license=('Apache-2.0' 'MIT')
-depends=('composefs' 'ostree' 'skopeo' 'podman')
+depends=('composefs' 'ostree' 'skopeo' 'podman' 'libselinux' 'clang')
 makedepends=('make' 'openssl' 'systemd' 'cargo' 'go-md2man')
 source=("bootc-${pkgver}.tar.zstd::${url}/releases/download/v${pkgver}/bootc-${pkgver}.tar.zstd"
   "bootc-${pkgver}-vendor.tar.zstd::${url}/releases/download/v${pkgver}/bootc-${pkgver}-vendor.tar.zstd")
