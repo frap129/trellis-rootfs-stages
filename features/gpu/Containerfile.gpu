@@ -21,6 +21,11 @@ FROM intel-base as intel
 RUN pacman -S --noconfirm \
   intel-media-driver
 
+# oneVPL runtime for Gen12+ / Xe GPUs
+FROM intel AS intel-vpl
+RUN pacman -S --noconfirm \
+  vpl-gpu-rt
+
 # AMD GPU Drivers
 FROM mesa AS amd
 RUN pacman -S --noconfirm \
