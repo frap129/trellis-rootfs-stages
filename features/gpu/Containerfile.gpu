@@ -34,6 +34,10 @@ RUN pacman -S --noconfirm \
   opencl-mesa \
   lib32-opencl-mesa
 
+# Iris needs RUSTICL_ENABLE to expose OpenCL; radeonsi is listed for parity
+COPY rootfs/etc/profile.d/opencl.sh /etc/profile.d/
+COPY rootfs/etc/environment.d/30-opencl.conf /etc/environment.d/
+
 # Userspace Nvidia GPU Drivers
 FROM ${BASE_IMAGE} AS nvidia
 RUN echo "export LIBVA_DRIVER_NAME=nvidia" > /etc/profile.d/nvidia-vaapi.sh
