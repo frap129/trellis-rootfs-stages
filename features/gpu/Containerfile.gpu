@@ -62,3 +62,7 @@ RUN systemctl enable switcheroo-control
 RUN systemctl enable nvidia-powerd
 RUN rm /etc/profile.d/nvidia-vaapi.sh
 
+# RTD3 hybrid graphics: prefer Mesa EGL when the NVIDIA dGPU has no display outputs
+COPY rootfs/etc/profile.d/nvidia-rtd3-workaround.sh /etc/profile.d/
+COPY rootfs/usr/lib/systemd/user-environment-generators/20-nvidia-rtd3-workaround /usr/lib/systemd/user-environment-generators/
+
