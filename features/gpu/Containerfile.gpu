@@ -50,6 +50,9 @@ RUN pacman -S --noconfirm \
   lib32-zlib-ng-compat \
   nvidia-open-dkms
 
+# Include NVIDIA kernel modules in the initramfs
+COPY rootfs/usr/lib/dracut/dracut.conf.d/50-nvidia.conf /usr/lib/dracut/dracut.conf.d/
+
 # Userspace Nvidia GPU Drivers + PRIME
 FROM nvidia AS nvidia-prime
 RUN pacman -S --noconfirm \
