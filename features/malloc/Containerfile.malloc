@@ -14,15 +14,15 @@ RUN pacman --noconfirm -U /aur/* && rm -r /aur
 COPY rootfs-hardened/ /
 
 FROM hardened-base AS hardened_malloc
-RUN printf '%s\n' /usr/lib/libhardened_malloc.so > /etc/ld.so.preload
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhardened_malloc.so > /usr/lib/profile.d/malloc.sh
 
 FROM hardened-base AS hardened_malloc-light
-RUN printf '%s\n' /usr/lib/libhardened_malloc-light.so > /etc/ld.so.preload
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhardened_malloc-light.so > /usr/lib/profile.d/malloc.sh
 
 FROM ${BASE_IMAGE} AS jemalloc
 RUN pacman --noconfirm -S jemalloc
-RUN printf '%s\n' /usr/lib/libjemalloc.so > /etc/ld.so.preload
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libjemalloc.so > /usr/lib/profile.d/malloc.sh
 
 FROM ${BASE_IMAGE} AS tcmalloc
 RUN pacman --noconfirm -S gperftools
-RUN printf '%s\n' /usr/lib/libtcmalloc_minimal.so > /etc/ld.so.preload
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libtcmalloc_minimal.so > /usr/lib/profile.d/malloc.sh
