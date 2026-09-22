@@ -12,17 +12,18 @@ RUN pacman --noconfirm -U /aur/* && rm -r /aur
 
 # Raise vm.max_map_count for hardened_malloc's guard slabs
 COPY rootfs-hardened/ /
+RUN mkdir /etc/profile.d/
 
 FROM hardened-base AS hardened_malloc
-RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhardened_malloc.so > /usr/lib/profile.d/malloc.sh
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhardened_malloc.so > /etc/profile.d/malloc.sh
 
 FROM hardened-base AS hardened_malloc-light
-RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhardened_malloc-light.so > /usr/lib/profile.d/malloc.sh
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhardened_malloc-light.so > /etc/profile.d/malloc.sh
 
 FROM ${BASE_IMAGE} AS jemalloc
 RUN pacman --noconfirm -S jemalloc
-RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libjemalloc.so > /usr/lib/profile.d/malloc.sh
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libjemalloc.so > /etc/profile.d/malloc.sh
 
 FROM ${BASE_IMAGE} AS tcmalloc
 RUN pacman --noconfirm -S gperftools
-RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libtcmalloc_minimal.so > /usr/lib/profile.d/malloc.sh
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libtcmalloc_minimal.so > /etc/profile.d/malloc.sh
