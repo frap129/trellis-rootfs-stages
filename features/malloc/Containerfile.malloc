@@ -1,0 +1,28 @@
+ARG BASE_IMAGE=${BASE_IMAGE}
+
+# Build hardened_malloc
+FROM localhost/trellis-builder AS pkg-builder
+COPY pkgbuilds /pkgbuilds/
+RUN build-aur -l hardened_malloc
+
+# Shared install for hardened_malloc variants
+FROM ${BASE_IMAGE} AS hardened-base
+COPY --from=pkg-builder /aur /aur
+RUN pacman --noconfirm -U /aur/* && rm -r /aur
+
+# Raise vm.max_map_count for hardened_malloc's guard slabs
+COPY rootfs-hardened/ /
+
+FROM hardened-base AS hardened_malloc
+RUN printf '%s\n' /usr/lib/libhardened_malloc.so > /etc/ld.so.preload
+
+FROM hardened-base AS hardened_malloc-light
+RUN printf '%s\n' /usr/lib/libhardened_malloc-light.so > /etc/ld.so.preload
+
+FROM ${BASE_IMAGE} AS jemalloc
+RUN pacman --noconfirm -S jemalloc
+RUN printf '%s\n' /usr/lib/libjemalloc.so > /etc/ld.so.preload
+
+FROM ${BASE_IMAGE} AS tcmalloc
+RUN pacman --noconfirm -S gperftools
+RUN printf '%s\n' /usr/lib/libtcmalloc_minimal.so > /etc/ld.so.preload

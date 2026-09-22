@@ -1,0 +1,13 @@
+diff --git i/new.cc w/new.cc
+index 165e19e..885ed94 100644
+--- i/new.cc
++++ w/new.cc
+@@ -1,5 +1,7 @@
+ // needed with libstdc++ but not libc++
+-#if __has_include(<bits/functexcept.h>)
++#if __has_include(<bits/new_throw.h>)
++#include <bits/new_throw.h>
++#elif __has_include(<bits/functexcept.h>)
+ #include <bits/functexcept.h>
+ #endif
+ 

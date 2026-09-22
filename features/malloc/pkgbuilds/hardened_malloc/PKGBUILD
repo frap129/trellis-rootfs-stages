@@ -1,0 +1,47 @@
+# Maintainer: Thibaut Sautereau (thithib) <thibaut at sautereau dot fr>
+#
+# Local override of the AUR package: the AUR release predates the upstream
+# fixes needed to build it with GCC 15 and 16, so the fixes from commits
+# 1d7fc7ffe0f8 and 04a25bd141ef are applied here.
+
+pkgname=hardened_malloc
+pkgver=13
+pkgrel=1
+pkgdesc="Hardened allocator designed for modern systems"
+arch=('x86_64')
+url="https://github.com/GrapheneOS/hardened_malloc"
+license=('MIT')
+depends=('gcc-libs')
+makedepends=('git')
+checkdepends=('python')
+provides=('libhardened_malloc.so' 'libhardened_malloc-light.so')
+source=("git+https://github.com/GrapheneOS/$pkgname#tag=$pkgver"
+        "gcc15.patch"
+        "gcc16.patch")
+sha256sums=('3e48dcfd888b3a871c0d59c6757ab328eb008e1951843c1dc75225432a4bf7db'
+            '70b491d5a8258b3bd226070454027d55f19a3d2cebe49cca8e30a9dc5e345165'
+            '087ee1c3c7a80dfd40b9ab226f97f14de93c9d1d2f86572c45158c23df0399ae')
+
+prepare() {
+  cd "$pkgname"
+  patch -p1 -i "${srcdir}/gcc15.patch"
+  patch -p1 -i "${srcdir}/gcc16.patch"
+}
+
+build() {
+  cd "$pkgname"
+  make VARIANT=default
+  make VARIANT=light
+}
+
+check() {
+  make -C "$pkgname" test
+}
+
+package() {
+  cd "$pkgname"
+  install -vDm755 -t "$pkgdir/usr/lib" out/libhardened_malloc.so out-light/libhardened_malloc-light.so
+  install -vDm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+# vim:set sts=2 sw=2 et:
