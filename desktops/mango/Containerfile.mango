@@ -5,9 +5,7 @@ FROM localhost/trellis-builder AS mango-builder
 
 RUN build-aur \
 	app2unit-git && \
-	build-aur --skippgpcheck wluma \
-	mangowm
-
+	build-aur --skippgpcheck wluma
 
 FROM ${BASE_IMAGE} AS mango
 
@@ -18,6 +16,7 @@ RUN rm -r /aur
 
 # Install Arch packages
 RUN pacman --noconfirm -S \
+  mangowm \
 	uwsm \
 	hypridle \
 	wlsunset \
@@ -48,14 +47,12 @@ COPY rootfs/etc/xdg/xdg-desktop-portal/mango-portals.conf /etc/xdg/xdg-desktop-p
 FROM localhost/trellis-builder AS noctalia-builder
 
 RUN build-aur \
-	noctalia \
-	noctalia-unofficial-auth-agent-git
+	noctalia
 
 FROM mango AS noctalia
 
 RUN pacman --noconfirm -S \
 	cava \
-	noctalia-shell \
 	wl-clipboard \
 	cliphist
 
