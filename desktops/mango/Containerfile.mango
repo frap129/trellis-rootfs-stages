@@ -46,12 +46,10 @@ COPY rootfs/etc/xdg/xdg-desktop-portal/mango-portals.conf /etc/xdg/xdg-desktop-p
 # Build AUR packages
 FROM localhost/trellis-builder AS noctalia-builder
 
-RUN build-aur \
-	noctalia
-
 FROM mango AS noctalia
 
 RUN pacman --noconfirm -S \
+  noctalia \
 	cava \
 	wl-clipboard \
 	cliphist
