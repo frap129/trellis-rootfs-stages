@@ -22,7 +22,7 @@ RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libhar
 
 FROM ${BASE_IMAGE} AS jemalloc
 RUN pacman --noconfirm -S jemalloc
-RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' /usr/lib/libjemalloc.so > /etc/profile.d/malloc.sh
+RUN printf 'export LD_PRELOAD="${LD_PRELOAD:+$LD_PRELOAD }%s"\n' '/usr/lib/libstdc++.so /usr/lib/libjemalloc.so' > /etc/profile.d/malloc.sh
 
 FROM ${BASE_IMAGE} AS tcmalloc
 RUN pacman --noconfirm -S gperftools
